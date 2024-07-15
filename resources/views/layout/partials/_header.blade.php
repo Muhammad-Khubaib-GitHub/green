@@ -11,13 +11,13 @@
                 <div id="kt_header_menu" class="header-menu header-menu-left header-menu-mobile header-menu-layout-default">
                     <ul class="menu-nav">
                         <li class="menu-item menu-item-open menu-item-here menu-item-submenu menu-item-rel menu-item-open menu-item-here" data-menu-toggle="click" aria-haspopup="true">
-                            <a href="{{ route('dashboard') }}" class="menu-link">
+                            <a href="{{ route('dashboard.index') }}" class="menu-link">
                                 <span class="menu-text">Dashboard</span>
                                 <i class="menu-arrow"></i>
                             </a>
                         </li>
                         <li class="menu-item menu-item-submenu menu-item-rel" data-menu-toggle="click" aria-haspopup="true">
-                            <a  href="{{ route('container.list') }}" class="menu-link">
+                            <a  href="{{ route('container.index') }}" class="menu-link">
                                 <span class="menu-text">Container</span>
                                 <span class="menu-desc"></span>
                                 <i class="menu-arrow"></i>
@@ -25,14 +25,14 @@
 
                         </li>
                         <li class="menu-item menu-item-submenu menu-item-rel" data-menu-toggle="click" aria-haspopup="true">
-                            <a href="{{ route('shipment.list') }}" class="menu-link">
+                            <a href="{{ route('shipment.index') }}" class="menu-link">
                                 <span class="menu-text">Shipments</span>
                                 <span class="menu-desc"></span>
                                 <i class="menu-arrow"></i>
                             </a>
                         </li>
                         <li class="menu-item menu-item-submenu menu-item-rel" data-menu-toggle="click" aria-haspopup="true">
-                            <a  href="{{ route('investor.list') }}" class="menu-link">
+                            <a  href="{{ route('users.index') }}" class="menu-link">
                                 <span class="menu-text">Investors</span>
                                 <span class="menu-desc"></span>
                                 <i class="menu-arrow"></i>

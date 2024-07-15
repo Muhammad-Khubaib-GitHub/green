@@ -20,10 +20,10 @@ class ShipmentsTableSeeder extends Seeder
 
             $faker = Faker::create();
 
-            $containerIds = Container::pluck('container_id')->toArray();
-            $userIds = User::pluck('user_id')->toArray();
+            $containerIds = Container::pluck('id')->toArray();
+            $userIds = User::pluck('id')->toArray();
             $data = [];
-            
+
             foreach (range(1, 50) as $index) {
                 $processingDate = $faker->dateTimeBetween('-1 year', 'now');
                 $returnDate = (clone $processingDate)->modify('+35 days');

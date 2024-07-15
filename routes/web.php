@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ContainerController;
+use App\Http\Controllers\dashboardController;
+use App\Http\Controllers\ShipmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,18 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('pages.dashboard');
-})->name('dashboard');
-
-Route::get('/container-list', function () {
-    return view('pages.container');
-})->name('container.list');
-
-Route::get('/investor-list', function () {
-    return view('pages.investor');
-})->name('investor.list');
-
-Route::get('/shipment-list', function () {
-    return view('pages.shipment');
-})->name('shipment.list');
+Route::resource('users', UserController::class);
+Route::resource('dashboard', dashboardController::class);
+Route::resource('shipment', ShipmentController::class);
+Route::resource('container', ContainerController::class);

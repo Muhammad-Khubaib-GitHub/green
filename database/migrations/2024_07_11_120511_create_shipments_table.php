@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('shipments', function (Blueprint $table) {
-            $table->increments('shipment_id');
+            $table->increments('id');
             $table->string('amount');
             $table->string('profit');
             $table->integer('container_id')->unsigned();
@@ -24,8 +24,8 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('container_id')->references('container_id')->on('containers');
-            $table->foreign('user_id')->references('user_id')->on('users');
+            $table->foreign('container_id')->references('id')->on('containers');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

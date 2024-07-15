@@ -1,5 +1,6 @@
 @extends('welcome')
 
+<!-- styles set and use in welcome class as master -->
 @section('style')
 <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
 @endsection

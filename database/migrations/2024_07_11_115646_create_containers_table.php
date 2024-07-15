@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('containers', function (Blueprint $table) {
-            $table->increments('container_id');
+            $table->increments('id');
             $table->string('type');
             $table->timestamps();
             $table->softDeletes();
