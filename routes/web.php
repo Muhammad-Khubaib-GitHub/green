@@ -17,6 +17,9 @@ use App\Http\Controllers\ShipmentController;
 |
 */
 
+Route::get('/', function(){
+    return view('pages.login');
+});
 Route::resource('users', UserController::class);
 Route::resource('dashboard', dashboardController::class);
 Route::resource('shipment', ShipmentController::class);
