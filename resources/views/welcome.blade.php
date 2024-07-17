@@ -63,9 +63,6 @@
     </div>
 
     <script>
-        var HOST_URL = "https://keenthemes.com/metronic/tools/preview";
-    </script>
-    <script>
         var KTAppSettings = {
             "breakpoints": {
                 "sm": 576,
@@ -124,12 +121,14 @@
             },
             "font-family": "Poppins"
         };
+
     </script>
     <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
     <script src="{{ asset('assets/plugins/custom/prismjs/prismjs.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
     <script src="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/pages/widgets.js') }}"></script>
+    <script src="assets/js/pages/features/miscellaneous/sweetalert2.js"></script>
 
     @hasSection('script')
         @yield('script')

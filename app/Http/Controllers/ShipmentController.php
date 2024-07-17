@@ -10,7 +10,8 @@ class ShipmentController extends Controller
     public function index()
     {
         $shipments = Shipment::with('container', 'user')->get();
-        return view('pages.shipment');
+
+        return view('pages.shipment', compact('shipments'));
     }
 
     public function create()
@@ -63,11 +64,12 @@ class ShipmentController extends Controller
             ->with('success', 'Shipment updated successfully.');
     }
 
-    public function destroy(Shipment $shipment)
+    public function destroy($id)
     {
+        $shipment = Shipment::findorfail($id);
+
         $shipment->delete();
 
-        return redirect()->route('shipments.index')
-            ->with('success', 'Shipment deleted successfully.');
+        return redirect()->back()->with('success', 'Shipment deleted successfully.');
     }
 }
