@@ -1,7 +1,12 @@
 @extends('welcome')
 
 @section('style')
+<link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('assets/plugins/custom/prismjs/prismjs.bundle.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ asset('assets/css/pages/shipment.style.css') }}" rel="stylesheet" type="text/css" />
+
 @endsection
 
 
@@ -102,7 +107,7 @@
                                             </ul>
                                         </div>
                                     </div>
-                                    <a href="#" class="btn btn-primary font-weight-bolder">
+                                    <a href="#" class="btn btn-primary font-weight-bolder" id="openModalBtn" >
                                         <span class="svg-icon svg-icon-md">
                                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
                                                 <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -185,13 +190,123 @@
 </div>
 
 
+
+<div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="d-flex flex-column-fluid">
+                <div class="container">
+                    <div class="card card-custom">
+                        <div class="card-body p-0">
+                            <div class="wizard wizard-3" id="kt_wizard_v3" data-wizard-state="step-first" data-wizard-clickable="true">
+                                <div class="row justify-content-center py-10 px-8 py-lg-12 px-lg-10">
+                                    <div class="col-xl-12 col-xxl-7">
+                                        <form class="form" id="kt_form" onsubmit="return validateForm()">
+                                            <div class="pb-5" data-wizard-type="step-content" data-wizard-state="current">
+                                                <h4 class="mb-10 font-weight-bold text-dark">Add New Shipment</h4>
+                                                <div class="form-group">
+                                                    <label>Investor Name</label>
+                                                    <select name="country" class="form-control" id="investorSelect">
+                                                        <option value="">Select </option>
+                                                        <option value="AF"> Amir shah </option>
+                                                        <option value="GB"> Usman Akram </option>
+                                                        <option value="US"> Nabeel Ahmad </option>
+                                                        <option value="ZW"> Ali Ahmad </option>
+                                                    </select>
+                                                    <span class="form-text text-danger error-msg" style="display: none;">Please select an investor.</span>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label>Select Container</label>
+                                                    <select name="country" class="form-control" id="containerSelect">
+                                                        <option value="">Select</option>
+                                                        <option value="AF">Afghanistan</option>
+                                                        <option value="GB">United Kingdom</option>
+                                                        <option value="US">United States</option>
+                                                        <option value="ZW">Zimbabwe</option>
+                                                    </select>
+                                                    <span class="form-text text-danger error-msg" style="display: none;">Please select a container.</span>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-xl-6">
+                                                        <div class="form-group">
+                                                            <label>Amount</label>
+                                                            <input type="number" min=1  class="form-control" name="amount" placeholder="1000" value="" />
+                                                            <span class="form-text text-danger error-msg" style="display: none;">Please enter container amount.</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="form-group">
+                                                            <label>Profit</label>
+                                                            <input type="number" min=1 class="form-control" name="profit" placeholder="10" value="" />
+                                                            <span class="form-text text-danger error-msg" style="display: none;">Please enter profit.</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-xl-6">
+                                                        <div class="form-group">
+                                                            <label>Prcessing Date</label>
+                                                            <input type="date" class="form-control" name="processingDate" placeholder="dd/mm/yyyy" value="" />
+                                                            <span class="form-text  text-danger error-msg" style="display: none;">Please select date.</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="form-group">
+                                                            <label>Return Date</label>
+                                                            <input type="date" class="form-control" name="returnDate" placeholder="dd/mm/yyyy" value="" />
+                                                            <span class="form-text text-danger error-msg" style="display: none;">Please select date.</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="form-group">
+                                                    <label>Return Date</label>
+                                                    <input type="date" class="form-control" name="returnDate" placeholder="dd/mm/yyyy" value="" />
+                                                    <span class="form-text text-danger error-msg" style="display: none;">Please select date.</span>
+                                                </div>
+                                            </div>
+
+
+
+                                            <div class="d-flex justify-content-between border-top mt-5 pt-10">
+                                                <div class="mr-2">
+                                                    <button class="btn btn-light-primary font-weight-bold text-uppercase px-9 py-4 close">Cancel</button>
+                                                </div>
+                                                <div>
+                                                    <button class="btn btn-success font-weight-bold text-uppercase px-9 py-4" data-wizard-type="action-submit">Submit</button>
+                                                </div>
+                                            </div>
+
+
+
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 @endsection
 
 
+
 @section('script')
-    <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
-    <script src="{{ asset('assets/plugins/custom/prismjs/prismjs.bundle.js') }}"></script>
-    <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
-    <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
-    <script src="{{ asset('assets/js/pages/crud/datatables/basic/paginations.js') }}"></script>
+<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
+<script src="{{ asset('assets/plugins/custom/prismjs/prismjs.bundle.js') }}"></script>
+<script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
+<script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
+<script src="{{ asset('assets/js/pages/crud/datatables/basic/paginations.js') }}"></script>
+<script src="{{ asset('assets/js/pages/custom/wizard/wizard-3.js') }}"></script>
+<script src="{{ asset('assets/js/pages/shipment.js') }}"></script>
+
 @endsection

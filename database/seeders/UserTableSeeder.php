@@ -3,9 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 use Faker\Factory as Faker;
+use Illuminate\Support\Str;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class UserTableSeeder extends Seeder
 {
@@ -33,7 +34,13 @@ class UserTableSeeder extends Seeder
                 'deleted_at' => null,
             ];
         }
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        User::truncate();
+
         User::insert( $data);
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 
     private function generateCnic($faker)

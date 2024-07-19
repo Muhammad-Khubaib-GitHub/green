@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Role;
-use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class RolesTableSeeder extends Seeder
 {
@@ -21,6 +22,12 @@ class RolesTableSeeder extends Seeder
             ['name' => 'Viewer',    'slug' => Str::slug('Viewer'), 'created_at' => now(), 'updated_at' => now()],
         ];
 
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        Role::truncate();
+
         Role::insert($roles);
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

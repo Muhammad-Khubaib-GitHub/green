@@ -2,11 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Container;
-use App\Models\Shipment;
 use App\Models\User;
-use Illuminate\Database\Seeder;
+use App\Models\Shipment;
+use App\Models\Container;
 use Faker\Factory as Faker;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ShipmentsTableSeeder extends Seeder
 {
@@ -39,6 +40,12 @@ class ShipmentsTableSeeder extends Seeder
                     'deleted_at' => null,
                 ];
             }
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+            Shipment::truncate();
+
             Shipment::insert($data);
+
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

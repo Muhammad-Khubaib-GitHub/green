@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Container;
 use App\Models\Shipment;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ShipmentController extends Controller
@@ -71,5 +73,18 @@ class ShipmentController extends Controller
         $shipment->delete();
 
         return redirect()->back()->with('success', 'Shipment deleted successfully.');
+    }
+
+    public function investorContainerList()
+
+    {
+        $investorList = User::all();
+
+        $containerList = Container::all();
+
+        $shipments = Shipment::with('container', 'user')->get();
+
+        return view('pages.shipment', compact('shipments','investorList', 'containerList'));
+
     }
 }
