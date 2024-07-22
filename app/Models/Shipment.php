@@ -12,16 +12,16 @@ class Shipment extends Model
 
     protected $primaryKey = 'id';
     protected $fillable = [
-        'amount', 'profit', 'container_id', 'return_date', 'processing_date', 'user_id'
+        'amount', 'profit', 'container_id', 'return_date', 'processing_date', 'current_date', 'user_id'
     ];
 
     public function container()
     {
-        return $this->belongsTo(Container::class, 'id');
+        return $this->belongsTo(Container::class, 'container_id');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

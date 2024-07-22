@@ -19,6 +19,10 @@ use App\Http\Controllers\ShipmentController;
 
 Route::get('/', [UserController::class, 'home']);
 Route::resource('users', UserController::class);
+Route::get('/investor/list', [UserController::class, 'userList'])->name('investor.list');
+
 Route::resource('dashboard', dashboardController::class);
 Route::resource('shipment', ShipmentController::class);
+
 Route::resource('container', ContainerController::class);
+Route::get('/container/list', [ContainerController::class, 'containerList'])->name('container.list');

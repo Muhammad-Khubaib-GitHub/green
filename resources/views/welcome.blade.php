@@ -12,9 +12,11 @@
     <link href="{{ asset('assets/plugins/custom/prismjs/prismjs.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link rel="shortcut icon" href="{{ asset('assets/media/logos/favicon.ico') }}" />
+    <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
 
     <link rel="preload" href="{{ asset('assets/plugins/global/fonts/flaticon2/Flaticon2.woff') }}" as="font" type="font/woff2" crossorigin="anonymous">
     <link rel="preload" href="{{ asset('assets/plugins/global/fonts/keenthemes-icons/Ki.woff') }}" as="font" type="font/woff2" crossorigin="anonymous">
+    <!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"> -->
 
     @hasSection('style')
         @yield('style')
@@ -22,7 +24,7 @@
 </head>
 
 
-<body id="kt_body" style="background-image: url(assets/media/bg/bg-10.jpg)" class="quick-panel-right demo-panel-right offcanvas-right header-fixed subheader-enabled page-loading">
+<body id="kt_body" style="background-image: url('{{ asset('assets/media/bg/bg-10.jpg') }}')" class="quick-panel-right demo-panel-right offcanvas-right header-fixed subheader-enabled page-loading">
 
     <div id="kt_header_mobile" class="header-mobile">
         <a href="index.html">
@@ -126,9 +128,10 @@
     <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
     <script src="{{ asset('assets/plugins/custom/prismjs/prismjs.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
+    <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
     <script src="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/pages/widgets.js') }}"></script>
-    <script src="{{ asset('assets/js/pages/features/miscellaneous/sweetalert2.js') }}"></script>
+    <script src="{{ asset('assets/js/pages/crud/datatables/basic/paginations.js') }}"></script>
 
     @hasSection('script')
         @yield('script')

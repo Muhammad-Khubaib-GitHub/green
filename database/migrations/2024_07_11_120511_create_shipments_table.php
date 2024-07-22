@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('container_id')->unsigned();
             $table->string('return_date');
             $table->string('processing_date');
+            $table->string('current_date');
             $table->integer('user_id')->unsigned();
             $table->timestamps();
             $table->softDeletes();

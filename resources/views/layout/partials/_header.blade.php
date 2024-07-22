@@ -135,7 +135,7 @@
             <div class="dropdown">
                 <div class="topbar-item" data-toggle="dropdown" data-offset="10px,0px">
                     <div class="btn btn-icon btn-hover-transparent-white btn-dropdown btn-lg mr-1">
-                        <img class="h-20px w-20px rounded-sm" src="assets/media/svg/flags/226-united-states.svg" alt="" />
+                        <img class="h-20px w-20px rounded-sm" src="{{ asset('assets/media/svg/flags/226-united-states.svg') }}" alt="" />
                     </div>
                 </div>
                 <div class="dropdown-menu p-0 m-0 dropdown-menu-anim-up dropdown-menu-sm dropdown-menu-right">
@@ -143,7 +143,7 @@
                         <li class="navi-item">
                             <a href="#" class="navi-link">
                                 <span class="symbol symbol-20 mr-3">
-                                    <img src="assets/media/svg/flags/226-united-states.svg" alt="" />
+                                    <img src="{{ asset('assets/media/svg/flags/226-united-states.svg') }}" alt="" />
                                 </span>
                                 <span class="navi-text">English</span>
                             </a>
@@ -151,7 +151,7 @@
                         <li class="navi-item active">
                             <a href="#" class="navi-link">
                                 <span class="symbol symbol-20 mr-3">
-                                    <img src="assets/media/svg/flags/128-spain.svg" alt="" />
+                                    <img src="{{ asset('assets/media/svg/flags/128-spain.svg') }}" alt="" />
                                 </span>
                                 <span class="navi-text">Spanish</span>
                             </a>
@@ -159,7 +159,7 @@
                         <li class="navi-item">
                             <a href="#" class="navi-link">
                                 <span class="symbol symbol-20 mr-3">
-                                    <img src="assets/media/svg/flags/162-germany.svg" alt="" />
+                                    <img src="{{ asset('assets/media/svg/flags/162-germany.svg') }}" alt="" />
                                 </span>
                                 <span class="navi-text">German</span>
                             </a>
@@ -167,7 +167,7 @@
                         <li class="navi-item">
                             <a href="#" class="navi-link">
                                 <span class="symbol symbol-20 mr-3">
-                                    <img src="assets/media/svg/flags/063-japan.svg" alt="" />
+                                    <img src="{{ asset('assets/media/svg/flags/063-japan.svg') }}" alt="" />
                                 </span>
                                 <span class="navi-text">Japanese</span>
                             </a>
@@ -175,7 +175,7 @@
                         <li class="navi-item">
                             <a href="#" class="navi-link">
                                 <span class="symbol symbol-20 mr-3">
-                                    <img src="assets/media/svg/flags/195-france.svg" alt="" />
+                                    <img src="{{ asset('assets/media/svg/flags/195-france.svg') }}" alt="" />
                                 </span>
                                 <span class="navi-text">French</span>
                             </a>
@@ -196,7 +196,7 @@
                 <div class="dropdown-menu p-0 m-0 dropdown-menu-right dropdown-menu-anim-up dropdown-menu-lg p-0">
                     <div class="d-flex align-items-center p-8 rounded-top">
                         <div class="symbol symbol-md bg-light-primary mr-3 flex-shrink-0">
-                            <img src="assets/media/users/300_21.jpg" alt="" />
+                            <img src="{{ asset('assets/media/users/300_21.jpg') }}" alt="" />
                         </div>
                         <div class="text-dark m-0 flex-grow-1 mr-3 font-size-h5">Sean Stone</div>
                         <span class="label label-light-success label-lg font-weight-bold label-inline">3 messages</span>

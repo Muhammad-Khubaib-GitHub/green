@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
+use function PHPUnit\Framework\isEmpty;
+
 class UserController extends Controller
 {
     public function index()
@@ -93,7 +95,25 @@ class UserController extends Controller
 
 
     public function home(){
-        
+
         return view('pages.login');
+    }
+
+    public static function userList()
+    {
+        try{
+            $users = User::get();
+
+            if($users->isEmpty())
+            {
+                return response()->error("Record not found.");
+            }
+            return response()->success($users, "Investor list");
+
+        }catch(\Exception $e){
+
+            return response()->error('An error occurred while retrieving users', 500, ['exception' => $e->getMessage()]);
+
+        }
     }
 }

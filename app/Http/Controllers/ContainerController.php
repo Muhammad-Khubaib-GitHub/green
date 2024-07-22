@@ -5,17 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Container;
 use Illuminate\Http\Request;
 
+use function PHPUnit\Framework\isEmpty;
+
 class ContainerController extends Controller
 {
     public function index()
     {
-        $containers = Container::all();
-        return view('pages.container');;
+        $containers = Container::with('country','investor')->get();
+        return view('pages.container.container', compact('containers'));
     }
 
     public function create()
     {
-        return view('containers.create');
+        return view('pages.container.newContainer');
     }
 
     public function store(Request $request)
@@ -56,8 +58,28 @@ class ContainerController extends Controller
     public function destroy($id)
     {
         $container = Container::findOrFail($id);
+
         $container->delete();
 
-        return redirect()->route('containers.index')->with('success', 'Container deleted successfully.');
+        return redirect()->back()->with('success', 'Container deleted successfully.');
+    }
+
+
+    public static function containerList()
+    {
+        try{
+            $containers = Container::get();
+
+            if($containers->isEmpty())
+            {
+                return response()->error("Record not found.");
+            }
+            return response()->success($containers, "Container list");
+
+        }catch(\Exception $e){
+
+            return response()->error('An error occurred while retrieving containers', 500, ['exception' => $e->getMessage()]);
+
+        }
     }
 }
