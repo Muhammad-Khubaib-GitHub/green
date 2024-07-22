@@ -134,9 +134,3 @@
 </div>
 @endsection
 
-
-
-@section('script')
-<script src="{{ asset('assets/js/pages/custom/wizard/wizard-3.js') }}"></script>
-<script src="{{ asset('assets/js/pages/shipment.js') }}"></script>
-@endsection
