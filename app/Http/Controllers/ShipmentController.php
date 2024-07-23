@@ -139,4 +139,9 @@ class ShipmentController extends Controller
         return view('pages.shipment', compact('shipments','investorList', 'containerList'));
 
     }
+
+    public function previewPdf()
+    {
+        return view('pdfs.shipment_pdf');
+    }
 }
