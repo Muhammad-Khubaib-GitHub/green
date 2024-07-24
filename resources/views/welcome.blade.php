@@ -132,6 +132,7 @@
     <script src="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/pages/widgets.js') }}"></script>
     <script src="{{ asset('assets/js/pages/crud/datatables/basic/paginations.js') }}"></script>
+   
 
     @hasSection('script')
         @yield('script')

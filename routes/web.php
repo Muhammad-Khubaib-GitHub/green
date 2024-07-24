@@ -21,6 +21,7 @@ Route::get('/', [UserController::class, 'home']);
 Route::get('/investor/list', [UserController::class, 'userList'])->name('investor.list');
 Route::get('/container/list', [ContainerController::class, 'containerList'])->name('container.list');
 Route::get('/shipment/pdf/preview', [ShipmentController::class, 'previewPdf'])->name('shipment.previewPdf');
+Route::post('/shipment/filter/record', [ShipmentController::class, 'shipmentFilter'])->name('shipment.filter');
 
 Route::resource('users', UserController::class);
 Route::resource('dashboard', dashboardController::class);

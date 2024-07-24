@@ -7,6 +7,12 @@
 <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('assets/css/pages/shipment.style.css') }}" rel="stylesheet" type="text/css" />
 
+<style>
+    .dropdown-custom-width .dropdown-menu {
+        width: 200px; /* Set your desired width here */
+    }
+</style>
+
 @endsection
 
 
@@ -90,14 +96,19 @@
                                                         <span class="navi-text">CSV</span>
                                                     </a>
                                                 </li>
-                                                <li class="navi-item">
-                                                    <a href="{{ route('shipment.previewPdf') }}" class="navi-link">
-                                                        <span class="navi-icon">
-                                                            <i class="la la-file-pdf-o"></i>
-                                                        </span>
-                                                        <span class="navi-text">PDF</span>
-                                                    </a>
-                                                </li>
+                                                <form id="pdfForm" action="{{ route('shipment.previewPdf') }}" method="GET">
+                                                    <input type="hidden" name="date_range" id="pdfDateRange" value="{{ request('date_range') }}">
+                                                    <input type="hidden" name="investor_id" id="pdfInvestorId" value="{{ request('investor_id') }}">
+                                                    @csrf
+                                                    <li class="navi-item">
+                                                        <a href="#" class="navi-link" id="pdfButton">
+                                                            <span class="navi-icon">
+                                                                <i class="la la-file-pdf-o"></i>
+                                                            </span>
+                                                            <span class="navi-text">PDF</span>
+                                                        </a>
+                                                    </li>
+                                                </form>
                                             </ul>
                                         </div>
                                     </div>
@@ -111,21 +122,35 @@
 
 
                             <div class="card card-custom">
-
-                                <form class="form">
+                                <form class="form" action="{{ route('shipment.filter') }}", method="POST">
+                                    @csrf
                                     <div class="card-body">
-                                        <div class="form-group row">
-                                            <label class="col-form-label text-right col-lg-3 col-sm-12">Date Range</label>
-                                            <div class="col-lg-4 col-md-9 col-sm-12">
-                                                <input type='text' class="form-control" id="kt_daterangepicker_1" readonly placeholder="Select date" type="text" />
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <label class="col-form-label text-left">Date</label>
+                                                <div class='input-group' style="width: 100%;" id='kt_daterangepicker_6'>
+                                                    <input type='text' name="date_range"  id="dateRange" class="form-control" readonly="readonly" placeholder="Select date range" />
+                                                </div>
                                             </div>
-                                            <div>
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <label class="col-form-label text-left">Investor</label>
+                                                <div class='input-group' style="width: 100%;" id='kt_daterangepicker_7'>
+                                                    <select name="investor_id" class="form-control  dropdown-custom-width" id="investorSelect">
+                                                        <option value="">Select </option>
+                                                        @foreach ($investors as $investor)
+                                                            <option value="{{ $investor->id }}" >{{ $investor->first_name . " " . $investor->last_name }} </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-lg-12 d-flex justify-content-end">
                                                 <button type="submit" class="btn btn-primary mr-2">Filter</button>
                                                 <button type="reset" class="btn btn-secondary">Reset</button>
                                             </div>
                                         </div>
                                     </div>
-
                                 </form>
                             </div>
 
@@ -201,5 +226,16 @@
 @endsection
 
 @section('script')
-<script src="assets/js/pages/crud/forms/widgets/bootstrap-daterangepicker.js"></script>
+    <script src="{{ asset('assets/js/pages/crud/forms/widgets/bootstrap-daterangepicker.js') }}"></script>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('pdfButton').addEventListener('click', function (event) {
+            event.preventDefault(); 
+
+            document.getElementById('pdfForm').submit();
+    });
+});
+</script>
+
 @endsection

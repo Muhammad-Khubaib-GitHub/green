@@ -11,6 +11,9 @@ class Shipment extends Model
     use SoftDeletes;
 
     protected $primaryKey = 'id';
+
+    public $timestamps = true;
+
     protected $fillable = [
         'amount', 'profit', 'container_id', 'return_date', 'processing_date', 'current_date', 'user_id'
     ];

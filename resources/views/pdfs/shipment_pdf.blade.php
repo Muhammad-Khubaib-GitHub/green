@@ -46,105 +46,46 @@
 </head>
 <body>
     <div class="container">
-        <h2>Enter name here</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Amount</th>
-                    <th>Processing Date</th>
-                    <th>Return Date</th>
-                    <th>Profit</th>
-                    <th>Current Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>2</td>
-                    <td>01/07/2024</td>
-                    <td>05/08/2024</td>
-                    <td>2</td>
-                    <td>01/07/2024</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>2</td>
-                    <td>01/07/2024</td>
-                    <td>05/08/2024</td>
-                    <td>2</td>
-                    <td>01/07/2024</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>2</td>
-                    <td>01/07/2024</td>
-                    <td>05/08/2024</td>
-                    <td>2</td>
-                    <td>01/07/2024</td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th></th>
-                    <th>Total Amount: 2.00</th>
-                    <th></th>
-                    <th></th>
-                    <th>Total Profit: 2.00</th>
-                    <th></th>
-                </tr>
-            </tfoot>
-        </table>
+        @foreach ($data as $index)
+            <h2>{{$index['investor']->first_name. ' '. $index['investor']->last_name}}</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Amount</th>
+                        <th>Container</th>
+                        <th>Processing Date</th>
+                        <th>Return Date</th>
+                        <th>Profit</th>
+                        <th>Current Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach ($index['shipments'] as $key => $value)
+                    <tr>
+                        <td>{{$key + 1}}</td>
+                        <td>{{$value->amount}}</td>
+                        <td>{{$value->container_id}}</td>
+                        <td>{{$value->processing_date}}</td>
+                        <td>{{$value->return_date}}</td>
+                        <td>{{$value->profit}}</td>
+                        <td>{{$value->current_date}}</td>
+                    </tr>
+                @endforeach
+                <tfoot>
+                    <tr>
+                        <th></th>
+                        <th>Total Amount: 2.00</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th>Total Profit: 2.00</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        @endforeach
 
-        <h2>Enter name here</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Amount</th>
-                    <th>Processing Date</th>
-                    <th>Return Date</th>
-                    <th>Profit</th>
-                    <th>Current Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>2</td>
-                    <td>01/07/2024</td>
-                    <td>05/08/2024</td>
-                    <td>2</td>
-                    <td>01/07/2024</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>2</td>
-                    <td>01/07/2024</td>
-                    <td>05/08/2024</td>
-                    <td>2</td>
-                    <td>01/07/2024</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>2</td>
-                    <td>01/07/2024</td>
-                    <td>05/08/2024</td>
-                    <td>2</td>
-                    <td>01/07/2024</td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th></th>
-                    <th>Total Amount: 2.00</th>
-                    <th></th>
-                    <th></th>
-                    <th>Total Profit: 2.00</th>
-                    <th></th>
-                </tr>
-            </tfoot>
-        </table>
         <div class="totals">
             <span>Grand Total Amount: 2.00</span>
             <span>Grand Total Profit: 2.00</span>

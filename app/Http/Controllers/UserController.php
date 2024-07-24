@@ -102,7 +102,7 @@ class UserController extends Controller
     public static function userList()
     {
         try{
-            $users = User::get();
+            $users = User::orderby('first_name','asc')->get();
 
             if($users->isEmpty())
             {

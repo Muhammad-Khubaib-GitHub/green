@@ -15,7 +15,11 @@ class ShipmentController extends Controller
     {
         $shipments = Shipment::with('container', 'user')->get();
 
-        return view('pages.shipment.shipment', compact('shipments'));
+        $investors = UserController::userList()->getOriginalContent();
+
+        $investors  = ($investors['status'] == 'success') ? $investors['data'] : [];
+
+        return view('pages.shipment.shipment', compact('shipments', 'investors'));
     }
 
     public function create()
@@ -48,7 +52,7 @@ class ShipmentController extends Controller
 
         }
 
-        Shipment::insert([
+        Shipment::create([
 
             'amount' => $request->amount,
             'profit' => $request->profit,
@@ -57,6 +61,7 @@ class ShipmentController extends Controller
             'processing_date' => $request->processing_date,
             'current_date' => $request->current_date,
             'user_id' => $request->investor_id,
+
         ]);
 
         return redirect()->route('shipment.index')
@@ -140,8 +145,78 @@ class ShipmentController extends Controller
 
     }
 
-    public function previewPdf()
+    public function previewPdf(Request $request)
     {
-        return view('pdfs.shipment_pdf');
+
+        $shipments = $this->filterData($request);
+
+        $groupedShipments = $shipments->groupBy('user_id');
+
+        $investors = User::whereIn('id', $groupedShipments->keys())->get()->keyBy('id');
+
+        $data = [];
+
+        foreach ($groupedShipments as $investorId => $shipments) {
+            $data[] = [
+                'investor' => $investors[$investorId],
+                'shipments' => $shipments
+            ];
+        }
+
+        return view('pdfs.shipment_pdf', compact('data'));
+    }
+
+    public function shipmentFilter(Request $request)
+    {
+        try{
+
+            $shipments = $this->filterData($request);
+
+            $investors = UserController::userList()->getOriginalContent();
+
+            $investors  = ($investors['status'] == 'success') ? $investors['data'] : [];
+
+            return view('pages.shipment.shipment', compact('shipments', 'investors'));
+
+
+        }catch(\Exception $e){
+
+            return response()->error('An error occurred while filtering', 500, ['exception' => $e->getMessage()]);
+        }
+
+    }
+
+
+    public function filterData($request)
+    {
+        try{
+
+            $query = Shipment::with('container', 'user');
+
+            if($request->filled('date_range')){
+
+                $dateRange = $request->input('date_range');
+
+                $dateParts = explode(' / ', $dateRange);
+
+                $fromDate = Carbon::createFromFormat('m/d/Y', $dateParts[0])->startOfDay();
+
+                $toDate = Carbon::createFromFormat('m/d/Y', $dateParts[1])->endOfDay();
+
+                $query->whereBetween('created_at', [$fromDate, $toDate]);
+            }
+
+            if($request->filled('investor_id')){
+
+                $query->where('user_id', $request->investor_id);
+            }
+
+            return $query->get();
+
+        }catch(\Exception $e){
+
+            return response()->error('An error occurred while filtering', 500, ['exception' => $e->getMessage()]);
+        }
+
     }
 }
