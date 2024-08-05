@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <title>Greenlink | Dashboard</title>
     <meta name="description" content="Updates and statistics" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
     <link href="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.css') }}" rel="stylesheet" type="text/css" />
@@ -132,7 +133,7 @@
     <script src="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/pages/widgets.js') }}"></script>
     <script src="{{ asset('assets/js/pages/crud/datatables/basic/paginations.js') }}"></script>
-   
+
 
     @hasSection('script')
         @yield('script')

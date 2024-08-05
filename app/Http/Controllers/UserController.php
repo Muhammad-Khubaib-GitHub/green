@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
+use Illuminate\Support\Facades\Hash;
 use function PHPUnit\Framework\isEmpty;
 
 class UserController extends Controller
@@ -13,7 +14,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('pages.investor');
+        return view('pages.investor.investor', compact('users'));
     }
 
     public function create()
@@ -52,8 +53,29 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $user = User::findOrFail($id);
-        return view('users.edit', compact('user'));
+        $shipments = [];
+
+        $startDate = "2024-07-01 00:0:00";
+
+        $endDate = "2024-08-01 23:59:59";
+
+        $parent = User::find($id);
+
+        $shipments[$id] = $parent->with('shipments')
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->where('id', $id)
+        ->first();
+
+        $children = $parent->children;
+
+        foreach ($children as $child) {
+            $shipments[$child->id] = $child->with('shipments')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('id', $child->id)
+            ->first();
+        }
+
+        return view('pages.investor.investor_detail', compact('shipments'));
     }
 
     public function update(Request $request, $id)
@@ -115,5 +137,12 @@ class UserController extends Controller
             return response()->error('An error occurred while retrieving users', 500, ['exception' => $e->getMessage()]);
 
         }
+    }
+
+
+    public function investorDetail(User $user)
+    {
+
+        return view('pages.investor.investor_detail');
     }
 }

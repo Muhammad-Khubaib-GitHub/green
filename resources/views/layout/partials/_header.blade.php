@@ -39,7 +39,7 @@
                             </a>
                         </li>
                         <li class="menu-item menu-item-submenu" data-menu-toggle="click" aria-haspopup="true">
-                            <a href="javascript:;" class="menu-link">
+                            <a href="{{route('investor.detail')}}" class="menu-link">
                                 <span class="menu-text">Pages</span>
                                 <span class="menu-desc"></span>
                                 <i class="menu-arrow"></i>

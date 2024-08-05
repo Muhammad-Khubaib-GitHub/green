@@ -52,7 +52,7 @@ class ShipmentController extends Controller
 
         }
 
-        Shipment::create([
+        $shipment = Shipment::create([
 
             'amount' => $request->amount,
             'profit' => $request->profit,
@@ -61,9 +61,16 @@ class ShipmentController extends Controller
             'processing_date' => $request->processing_date,
             'current_date' => $request->current_date,
             'user_id' => $request->investor_id,
-
+            'created_at' => Carbon::now()
         ]);
 
+        if($request->has('api')){
+            return response()->json([
+                'success' => true,
+                'message' => 'Shipment Created successfully',
+                'data' => $shipment
+            ]);
+        }
         return redirect()->route('shipment.index')
             ->with('success', 'Shipment created successfully.');
     }
@@ -119,6 +126,13 @@ class ShipmentController extends Controller
                 'updated_at' => Carbon::now()
         ]);
 
+        if($request->has('api')){
+            return response()->json([
+                'success' => true,
+                'message' => 'Shipment updated successfully',
+                'data' => $shipment
+            ]);
+        }
         return redirect()->route('shipment.index')
                     ->with('success', 'Shipment update successfully.');
     }
