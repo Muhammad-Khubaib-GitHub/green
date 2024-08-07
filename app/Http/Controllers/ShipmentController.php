@@ -137,11 +137,19 @@ class ShipmentController extends Controller
                     ->with('success', 'Shipment update successfully.');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request , $id)
     {
         $shipment = Shipment::findorfail($id);
 
         $shipment->delete();
+
+        if($request->has('api')){
+            return response()->json([
+                'success' => true,
+                'message' => 'Shipment deleted successfully',
+                'data' => []
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Shipment deleted successfully.');
     }

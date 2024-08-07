@@ -133,8 +133,28 @@
     <script src="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.js') }}"></script>
     <script src="{{ asset('assets/js/pages/widgets.js') }}"></script>
     <script src="{{ asset('assets/js/pages/crud/datatables/basic/paginations.js') }}"></script>
+    <script src="{{ asset('assets/js/pages/features/miscellaneous/toastr.js') }}"></script>
+    <script>
 
+            toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+            };
 
+    </script>
     @hasSection('script')
         @yield('script')
     @endif

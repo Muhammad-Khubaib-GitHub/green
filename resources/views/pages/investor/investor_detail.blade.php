@@ -304,7 +304,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr class="collapsible-row">
+                                                    <tr class="collapsible-row" data-investor-id="{{$investor->id}}" >
 
                                                         <td><input type="text" value="{{$investor->id}}" readonly></td>
                                                         <td><input type="text" value="{{$investor->first_name}}" readonly></td>
@@ -339,7 +339,7 @@
                                                                     </thead>
                                                                     <tbody>
                                                                         @foreach ($investor->shipments as $shipment)
-                                                                        <tr data-id="{{ $shipment->id }}" data-update-url="{{ route('shipment.update', $shipment->id) }}">
+                                                                        <tr data-id="{{ $shipment->id }}" data-delete-url="{{route('shipment.destroy', $shipment->id)}}" data-update-url="{{ route('shipment.update', $shipment->id) }}">
                                                                             <td><input type="text" name="id" value="{{ $shipment->id }}" readonly></td>
                                                                             <td><input type="number" name="amount" value="{{ $shipment->amount }}" readonly></td>
                                                                             <td><input type="number" name="container_id" value="{{ $shipment->container_id }}" readonly></td>
@@ -384,43 +384,11 @@
 
 @section('script')
 
-<!-- <script>
-    async function apiCall(route, method, data = null) {
-        event.preventDefault();
-        const token = document.getElementById('csrf_token').value;
-
-        const options = {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': token
-            }
-        };
-
-        if (data) {
-            options.body = JSON.stringify(data);
-        }
-
-        try {
-            const response = await fetch(route, options);
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.message || 'Something went wrong');
-            }
-
-            return result;
-        } catch (error) {
-            console.error('Error:', error);
-            throw error;
-        }
-    }
-</script> -->
-
 <script>
+
+    // enable the shipment fields
     function handleEdit(button) {
         const row = button.closest('tr');
-        console.log('Handling edit for row:', row);
         row.querySelectorAll('input').forEach(input => input.removeAttribute('readonly'));
         row.querySelector('.edit').classList.add('hidden');
         row.querySelector('.save').classList.remove('hidden');
@@ -440,38 +408,39 @@
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        // Make API call to save data
-        console.log('Saving data:', data, csrfToken);
-
         const updateUrl = row.getAttribute('data-update-url');
 
-        // Make API call to save data
         fetch(updateUrl, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken, // Include CSRF token for security
+                    'X-CSRF-TOKEN': csrfToken,
                 },
                 body: JSON.stringify(data),
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('Success:', data);
+
+                    toastr.success(data.message, "Success");
 
                     row.querySelector('input[name="id"]').value = data.data.id;
 
                 } else {
-                    console.error('Error:', data.message);
+                    toastr.info(data.message, "Info");
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                toastr.error(data.message, "Exception");
+                console.error('Error:', error);
+            });
 
         row.querySelector('.edit').classList.remove('hidden');
         row.querySelector('.save').classList.add('hidden');
         row.querySelector('.cancel').classList.add('hidden');
     }
 
+    // cancel the action
     function handleCancel(button) {
         const row = button.closest('tr');
         console.log('Handling cancel for row:', row);
@@ -481,13 +450,49 @@
         row.querySelector('.cancel').classList.add('hidden');
     }
 
+    // delete the shipment data
     function handleDelete(button) {
         const row = button.closest('tr');
-        console.log('Handling delete for row:', row);
-        // Implement delete functionality
-        console.log('Deleting row:', row);
+        const data = {};
+        row.querySelectorAll('input').forEach(input => {
+            data[input.name] = input.value;
+        });
+
+        data['api'] = 'apicall';
+
+        const deleteUrl = row.getAttribute('data-delete-url');
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+
+                    toastr.success(data.message, "Success");
+
+                    row.remove();
+
+                } else {
+
+                    toastr.info(data.message, "Info");
+                }
+            })
+            .catch(error => {
+
+                console.error('Error:', error);
+                toastr.error(data.message, "Error");
+            });
     }
 
+    // New shipment
     function handleCreate(button) {
         const row = button.closest('tr');
         const data = {};
@@ -500,29 +505,23 @@
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        // Make API call to save data
-        console.log('Create data:', data, csrfToken);
-
-        // Make API call to save data
         fetch("{{ route('shipment.store') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken, // Include CSRF token for security
+                    'X-CSRF-TOKEN': csrfToken,
                 },
                 body: JSON.stringify(data),
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('Success:', data);
-                    alert(data.message);
 
-                    // Update row attributes with the new ID and update URL
+                    toastr.success(data.message, "Success");
+
                     row.setAttribute('data-id', data.data.id);
                     row.setAttribute('data-update-url', "{{ route('shipment.update', '') }}/" + data.data.id);
 
-                    // Change the button behavior to handleSave
                     const saveButton = row.querySelector('.save');
                     saveButton.setAttribute('onclick', 'handleSave(this)');
                     saveButton.classList.add('hidden');
@@ -536,10 +535,15 @@
                     row.querySelector('input[name="id"]').value = data.data.id;
 
                 } else {
-                    console.error('Error:', data.message);
+                    toastr.info(data.message, "Info");
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+
+                console.error('Error:', error);
+                toastr.error(data.message, "Error");
+
+            });
 
         row.querySelector('.edit').classList.remove('hidden');
         row.querySelector('.save').classList.add('hidden');
@@ -631,7 +635,7 @@
         document.querySelectorAll('.action-btn.delete').forEach(button => {
             button.addEventListener('click', function() {
                 const row = this.closest('tr');
-                row.remove();
+                // row.remove();
             });
         });
 
@@ -641,15 +645,15 @@
                 const detailRow = this.closest('tr').nextElementSibling;
                 const detailTable = detailRow.querySelector('.detail-table tbody');
                 const newRow = document.createElement('tr');
-
+                const investorId = this.closest('tr').getAttribute('data-investor-id');
                 newRow.innerHTML = `
-                        <td><input type="text"   name="id"                value="" required></td>
+                        <td><input type="text"   name="id"                value="" readonly></td>
                         <td><input type="number" name="amount"            value="" required></td>
                         <td><input type="number" name="container_id"      value="" required></td>
                         <td><input type="date"   name="processing_date"   value="" required></td>
                         <td><input type="date"   name="return_date"       value="" required></td>
                         <td><input type="date"   name="current_date"      value="" required></td>
-                        <td><input type="text"   name="investor_id"       value="" required></td>
+                        <td><input type="text"   name="investor_id"       value="${investorId}" readonly></td>
                         <td><input type="number" name="profit"            value="" required></td>
                         <td>
                             <button class="action-btn edit hidden" onclick="handleEdit(this)">Edit</button>
