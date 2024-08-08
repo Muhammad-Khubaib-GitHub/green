@@ -304,7 +304,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr class="collapsible-row" data-investor-id="{{$investor->id}}" >
+                                                    <tr class="collapsible-row" data-investor-id="{{$investor->id}}">
 
                                                         <td><input type="text" value="{{$investor->id}}" readonly></td>
                                                         <td><input type="text" value="{{$investor->first_name}}" readonly></td>
@@ -329,24 +329,27 @@
                                                                             <th>Shipment</th>
                                                                             <th>Amount</th>
                                                                             <th>Container</th>
+                                                                            <th>Cycle Days</th>
                                                                             <th>Processing</th>
                                                                             <th>Return</th>
                                                                             <th>Created</th>
-                                                                            <th>Investor</th>
+                                                                            <!-- <th>Investor</th> -->
                                                                             <th>Profit</th>
                                                                             <th>Actions</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                        @foreach ($investor->shipments as $shipment)
-                                                                        <tr data-id="{{ $shipment->id }}" data-delete-url="{{route('shipment.destroy', $shipment->id)}}" data-update-url="{{ route('shipment.update', $shipment->id) }}">
+                                                                        @if ($investor)
+                                                                        @forelse ($investor->shipments as $shipment)
+                                                                        <tr data-id="{{ $shipment->id }}" data-delete-url="{{ route('shipment.destroy', $shipment->id) }}" data-update-url="{{ route('shipment.update', $shipment->id) }}" data-investor-id="{{$investor->id}}">
                                                                             <td><input type="text" name="id" value="{{ $shipment->id }}" readonly></td>
                                                                             <td><input type="number" name="amount" value="{{ $shipment->amount }}" readonly></td>
                                                                             <td><input type="number" name="container_id" value="{{ $shipment->container_id }}" readonly></td>
+                                                                            <td><input type="number" name="user_container_cycle_id" value="{{ $shipment->user_container_cycle }}" readonly></td>
                                                                             <td><input type="date" name="processing_date" value="{{ \Carbon\Carbon::parse($shipment->processing_date)->format('Y-m-d') }}" readonly></td>
                                                                             <td><input type="date" name="return_date" value="{{ \Carbon\Carbon::parse($shipment->return_date)->format('Y-m-d') }}" readonly></td>
                                                                             <td><input type="date" name="current_date" value="{{ \Carbon\Carbon::parse($shipment->current_date)->format('Y-m-d') }}" readonly></td>
-                                                                            <td><input type="text" name="investor_id" value="{{ $shipment->user_id }}" readonly></td>
+                                                                            <!-- <td><input type="text" name="investor_id" value="{{ $shipment->user_id }}" readonly></td> -->
                                                                             <td><input type="number" name="profit" value="{{ $shipment->profit }}" readonly></td>
                                                                             <td>
                                                                                 <button class="action-btn edit" onclick="handleEdit(this)">Edit</button>
@@ -355,7 +358,17 @@
                                                                                 <button class="action-btn delete" onclick="handleDelete(this)">Delete</button>
                                                                             </td>
                                                                         </tr>
-                                                                        @endforeach
+                                                                        @empty
+                                                                        <tr>
+                                                                            <td colspan="9">No data found</td>
+                                                                        </tr>
+                                                                        @endforelse
+                                                                        @else
+                                                                        <tr>
+                                                                            <td colspan="9">Investor not found</td>
+                                                                        </tr>
+                                                                        @endif
+
                                                                     </tbody>
                                                                 </table>
                                                             </div>
@@ -385,7 +398,6 @@
 @section('script')
 
 <script>
-
     // enable the shipment fields
     function handleEdit(button) {
         const row = button.closest('tr');
@@ -403,6 +415,9 @@
             data[input.name] = input.value;
             input.setAttribute('readonly', true);
         });
+
+        const investorId = button.closest('tr').getAttribute('data-investor-id');
+        data['investor_id'] = investorId;
 
         data['api'] = 'apicall';
 
@@ -646,14 +661,17 @@
                 const detailTable = detailRow.querySelector('.detail-table tbody');
                 const newRow = document.createElement('tr');
                 const investorId = this.closest('tr').getAttribute('data-investor-id');
+
+                // <td><input type="text"   name="investor_id"       value="${investorId}" readonly></td>
+
                 newRow.innerHTML = `
                         <td><input type="text"   name="id"                value="" readonly></td>
                         <td><input type="number" name="amount"            value="" required></td>
                         <td><input type="number" name="container_id"      value="" required></td>
+                        <td><input type="number" name="user_container_cycle_id"      value="" required></td>
                         <td><input type="date"   name="processing_date"   value="" required></td>
                         <td><input type="date"   name="return_date"       value="" required></td>
                         <td><input type="date"   name="current_date"      value="" required></td>
-                        <td><input type="text"   name="investor_id"       value="${investorId}" readonly></td>
                         <td><input type="number" name="profit"            value="" required></td>
                         <td>
                             <button class="action-btn edit hidden" onclick="handleEdit(this)">Edit</button>

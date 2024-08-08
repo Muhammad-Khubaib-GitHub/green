@@ -33,4 +33,13 @@ class Shipment extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    /**
+     * Get the shipment with container cycle.
+     */
+    public function containerUsers()
+    {
+        return $this->belongsToMany(User::class, 'container_users')
+                    ->withPivot('user_container_cycle');
+    }
 }

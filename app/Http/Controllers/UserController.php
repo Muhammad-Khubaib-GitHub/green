@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ContainerUser;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -57,22 +58,51 @@ class UserController extends Controller
 
         $startDate = "2024-07-01 00:0:00";
 
-        $endDate = "2024-08-01 23:59:59";
+        $endDate = "2024-07-01 23:59:59";
 
         $parent = User::find($id);
 
-        $shipments[$id] = $parent->with('shipments')
-        ->whereBetween('created_at', [$startDate, $endDate])
+        $parentShipments = $parent->with('shipments')
         ->where('id', $id)
         ->first();
 
+        foreach($parentShipments->shipments as $shipment){
+            $containerUser = ContainerUser::select('user_container_cycle')
+            ->where([
+                'user_id' => $shipment->user_id,
+                'container_id' => $shipment->container_id
+            ])->first();
+
+            if ($containerUser) {
+                $shipment->user_container_cycle = $containerUser->user_container_cycle;
+            }
+        }
+
+        $shipments[$id] = $parentShipments ? $parentShipments : $parent;
+
         $children = $parent->children;
 
-        foreach ($children as $child) {
-            $shipments[$child->id] = $child->with('shipments')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->where('id', $child->id)
-            ->first();
+        if(!$children->isEmpty()){
+
+            foreach ($children as $child) {
+                $childShipments = $child->with('shipments')
+                ->where('id', $child->id)
+                ->first();
+
+                $shipments[$child->id] = $childShipments ? $childShipments : collect();
+
+                foreach($childShipments->shipments as $shipment){
+                    $containerUser = ContainerUser::select('user_container_cycle')
+                    ->where([
+                        'user_id' => $shipment->user_id,
+                        'container_id' => $shipment->container_id
+                    ])->first();
+
+                    if ($containerUser) {
+                        $shipment->user_container_cycle = $containerUser->user_container_cycle;
+                    }
+                }
+            }
         }
 
         return view('pages.investor.investor_detail', compact('shipments'));
