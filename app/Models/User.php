@@ -68,4 +68,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(User::class, 'parent_id');
     }
+
+    /**
+     * Get the Investor containers with their cycle day's.
+     */
+    public function containers()
+    {
+        return $this->belongsToMany(Container::class, 'container_users')
+                    ->withPivot('user_container_cycle')
+                    ->withTimestamps()
+                    ->withTrashed();
+    }
 }

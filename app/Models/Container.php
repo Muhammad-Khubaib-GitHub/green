@@ -28,4 +28,12 @@ class Container extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'container_users')
+                    ->withPivot('user_container_cycle')
+                    ->withTimestamps()
+                    ->withTrashed();
+    }
 }
