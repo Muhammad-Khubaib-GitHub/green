@@ -342,15 +342,15 @@
                                                                         @if ($investor)
                                                                         @forelse ($investor->shipments as $shipment)
                                                                         <tr data-id="{{ $shipment->id }}" data-delete-url="{{ route('shipment.destroy', $shipment->id) }}" data-update-url="{{ route('shipment.update', $shipment->id) }}" data-investor-id="{{$investor->id}}">
-                                                                            <td><input type="text" name="id" value="{{ $shipment->id }}" readonly></td>
-                                                                            <td><input type="number" name="amount" value="{{ $shipment->amount }}" readonly></td>
-                                                                            <td><input type="number" name="container_id" value="{{ $shipment->container_id }}" readonly></td>
-                                                                            <td><input type="number" name="user_container_cycle_id" value="{{ $shipment->user_container_cycle }}" readonly></td>
-                                                                            <td><input type="date" name="processing_date" value="{{ \Carbon\Carbon::parse($shipment->processing_date)->format('Y-m-d') }}" readonly></td>
-                                                                            <td><input type="date" name="return_date" value="{{ \Carbon\Carbon::parse($shipment->return_date)->format('Y-m-d') }}" readonly></td>
-                                                                            <td><input type="date" name="current_date" value="{{ \Carbon\Carbon::parse($shipment->current_date)->format('Y-m-d') }}" readonly></td>
+                                                                            <td><input type="text" name="id" value="{{ $shipment->id }}" readonly ></td>
+                                                                            <td><input type="number" name="amount" value="{{ $shipment->amount }}" readonly required></td>
+                                                                            <td><input type="number" name="container_id" value="{{ $shipment->container_id }}" readonly required></td>
+                                                                            <td><input type="number" name="user_container_cycle_id" value="{{ $shipment->user_container_cycle }}" readonly required></td>
+                                                                            <td><input type="date" name="processing_date" value="{{ \Carbon\Carbon::parse($shipment->processing_date)->format('Y-m-d') }}" readonly required></td>
+                                                                            <td><input type="date" name="return_date" value="{{ \Carbon\Carbon::parse($shipment->return_date)->format('Y-m-d') }}" readonly required></td>
+                                                                            <td><input type="date" name="current_date" value="{{ \Carbon\Carbon::parse($shipment->current_date)->format('Y-m-d') }}" readonly required></td>
                                                                             <!-- <td><input type="text" name="investor_id" value="{{ $shipment->user_id }}" readonly></td> -->
-                                                                            <td><input type="number" name="profit" value="{{ $shipment->profit }}" readonly></td>
+                                                                            <td><input type="number" name="profit" value="{{ $shipment->profit }}" readonly required></td>
                                                                             <td>
                                                                                 <button class="action-btn edit" onclick="handleEdit(this)">Edit</button>
                                                                                 <button class="action-btn save hidden" onclick="handleSave(this)">Save</button>
@@ -515,6 +515,8 @@
             data[input.name] = input.value;
             input.setAttribute('readonly', true);
         });
+        const investorId = button.closest('tr').getAttribute('data-investor-id');
+        data['investor_id'] = investorId;
 
         data['api'] = 'apicall';
 
@@ -661,7 +663,7 @@
                 const detailTable = detailRow.querySelector('.detail-table tbody');
                 const newRow = document.createElement('tr');
                 const investorId = this.closest('tr').getAttribute('data-investor-id');
-
+                newRow.setAttribute('data-investor-id', investorId);
                 // <td><input type="text"   name="investor_id"       value="${investorId}" readonly></td>
 
                 newRow.innerHTML = `
