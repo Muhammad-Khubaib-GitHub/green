@@ -65,7 +65,7 @@ class ContainerController extends Controller
     }
 
 
-    public static function containerList()
+    public static function containerList(Request $request)
     {
         try{
             $containers = Container::get();
@@ -73,6 +73,14 @@ class ContainerController extends Controller
             if($containers->isEmpty())
             {
                 return response()->error("Record not found.");
+            }
+            
+            if($request->has('api')){
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Container list',
+                    'data' => $containers
+                ]);
             }
             return response()->success($containers, "Container list");
 
