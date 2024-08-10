@@ -22,6 +22,8 @@ Route::get('/investor/list', [UserController::class, 'userList'])->name('investo
 Route::get('/investor/detail', [UserController::class, 'investorDetail'])->name('investor.detail');
 
 Route::get('/container/list', [ContainerController::class, 'containerList'])->name('container.list');
+Route::get('/container/{id}/detail/{investor_id?}', [ContainerController::class, 'containerDetail'])->name('container.detail');
+
 Route::get('/shipment/pdf/preview', [ShipmentController::class, 'previewPdf'])->name('shipment.previewPdf');
 Route::post('/shipment/filter/record', [ShipmentController::class, 'shipmentFilter'])->name('shipment.filter');
 

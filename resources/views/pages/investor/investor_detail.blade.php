@@ -566,6 +566,42 @@
         row.querySelector('.save').classList.add('hidden');
         row.querySelector('.cancel').classList.add('hidden');
     }
+
+    function handleContainerChange(containerInput) {
+    const containerId = containerInput.value;
+    const row = containerInput.closest('tr');
+    const investorId = row.getAttribute('data-investor-id');
+    const baseUrl = `{{ route('container.detail', ['id' => 'PLACEHOLDER']) }}`;
+
+    var apiUrl = baseUrl.replace('PLACEHOLDER', containerId);
+
+    apiUrl = apiUrl? apiUrl+"/"+investorId : apiUrl;
+
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            if(data.success){
+                // Update row fields with the data from the API
+                row.querySelector('input[name="user_container_cycle_id"]').value = data.data.user_container_cycle || '';
+                row.querySelector('input[name="processing_date"]').value = data.data.return_date || '';
+                row.querySelector('input[name="return_date"]').value = data.data.new_return_date || '';
+                row.querySelector('input[name="current_date"]').value = data.data.today_date || '';
+            } else {
+                    toastr.error(data.message, "Invalid");
+                    row.querySelector('input[name="user_container_cycle_id"]').value = '';
+                    row.querySelector('input[name="processing_date"]').value = '';
+                    row.querySelector('input[name="return_date"]').value = '';
+                    row.querySelector('input[name="current_date"]').value = '';
+                }
+        })
+        .catch(error => {
+
+            console.error('Error fetching container data:', error);
+            // Handle error case, e.g., show an alert or leave fields unchanged
+        });
+}
+
 </script>
 
 <script>
@@ -669,10 +705,10 @@
                 newRow.innerHTML = `
                         <td><input type="text"   name="id"                value="" readonly></td>
                         <td><input type="number" name="amount"            value="" required></td>
-                        <td><input type="number" name="container_id"      value="" required></td>
-                        <td><input type="number" name="user_container_cycle_id"      value="" required></td>
-                        <td><input type="date"   name="processing_date"   value="" required></td>
-                        <td><input type="date"   name="return_date"       value="" required></td>
+                        <td><input type="number" name="container_id"      value="" required oninput="handleContainerChange(this)"></td>
+                        <td><input type="number" name="user_container_cycle_id"      value="" required readonly></td>
+                        <td><input type="date"   name="processing_date"   value="" required readonly></td>
+                        <td><input type="date"   name="return_date"       value="" required readonly></td>
                         <td><input type="date"   name="current_date"      value="" required></td>
                         <td><input type="number" name="profit"            value="" required></td>
                         <td>

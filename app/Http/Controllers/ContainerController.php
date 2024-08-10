@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\Shipment;
 use App\Models\Container;
 use Illuminate\Http\Request;
 
+use App\Models\ContainerUser;
 use function PHPUnit\Framework\isEmpty;
+use Illuminate\Support\Facades\Validator;
 
 class ContainerController extends Controller
 {
@@ -33,7 +37,12 @@ class ContainerController extends Controller
 
     public function show($id)
     {
-        $container = Container::findOrFail($id);
+        $container = Shipment::select('return_date', 'current_date')
+            ->where('container_id', $id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+
         return view('containers.show', compact('container'));
     }
 
@@ -74,7 +83,7 @@ class ContainerController extends Controller
             {
                 return response()->error("Record not found.");
             }
-            
+
             if($request->has('api')){
                 return response()->json([
                     'success' => true,
@@ -88,6 +97,63 @@ class ContainerController extends Controller
 
             return response()->error('An error occurred while retrieving containers', 500, ['exception' => $e->getMessage()]);
 
+        }
+    }
+
+    public static function containerDetail($container_id, $investor_id)
+    {
+        try{
+
+            $validator = Validator::make([
+                'container_id' => $container_id,
+                'investor_id' => $investor_id,
+            ], [
+                'container_id' => 'required|exists:containers,id',
+                'investor_id' => 'required|exists:users,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->first()
+                ]);
+            }
+
+            $containerShipment = Shipment::select('return_date', 'current_date')
+                ->where('container_id', $container_id)
+                ->orderBy('id', 'desc')
+                ->first();
+
+            $containerDetail = ContainerUser::select('user_id', 'container_id', 'user_container_cycle')
+            ->where([
+                "container_users.container_id" => $container_id,
+                "container_users.user_id" => $investor_id,
+            ])->orderBy('id','desc')->first();
+
+            if($containerShipment){
+
+                $containerDetail->new_return_date = Carbon::createFromFormat('Y-m-d', $containerShipment->return_date)->addDays($containerDetail->user_container_cycle)->format('Y-m-d');
+
+            }else{
+
+                $containerDetail->new_return_date = Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->addDays($containerDetail->user_container_cycle)->format('Y-m-d');
+
+            }
+
+            $containerDetail->return_date = isset($containerShipment) ? $containerShipment->return_date : date('Y-m-d');
+            $containerDetail->current_date = isset($containerShipment) ? $containerShipment->current_date : date('Y-m-d');
+            $containerDetail->today_date = date('Y-m-d');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Container Detail',
+                'data' => $containerDetail
+            ]);
+
+
+        }catch(\Exception $e){
+
+            return response()->error('An error occurred while retrieving containers', 500, ['exception' => $e->getMessage()]);
         }
     }
 }
