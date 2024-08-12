@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Shipment;
 use App\Models\Container;
+use App\Models\ContainerUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
@@ -22,9 +23,9 @@ class ShipmentController extends Controller
         return view('pages.shipment.shipment', compact('shipments', 'investors'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $containers = ContainerController::containerList()->getOriginalContent();
+        $containers = ContainerController::containerList($request)->getOriginalContent();
         $investors = UserController::userList()->getOriginalContent();
 
         $containers = ($containers['status'] == 'success') ? $containers['data'] : [];
@@ -35,44 +36,64 @@ class ShipmentController extends Controller
 
     public function store(Request $request)
     {
-
-        $validator = Validator::make($request->all(), [
-            'amount' => 'required|numeric',
-            'profit' => 'required|numeric',
-            'container_id' => 'required|exists:containers,id',
-            'return_date' => 'required|date',
-            'processing_date' => 'required|date',
-            'current_date' => 'required|date',
-            'investor_id' => 'required|exists:users,id',
-        ]);
-
-        if ($validator->fails()) {
-
-            return redirect()->back()->withErrors($validator->errors()->all());
-
-        }
-
-        $shipment = Shipment::create([
-
-            'amount' => $request->amount,
-            'profit' => $request->profit,
-            'container_id' => $request->container_id,
-            'return_date' => $request->return_date,
-            'processing_date' => $request->processing_date,
-            'current_date' => $request->current_date,
-            'user_id' => $request->investor_id,
-            'created_at' => Carbon::now()
-        ]);
-
-        if($request->has('api')){
-            return response()->json([
-                'success' => true,
-                'message' => 'Shipment Created successfully',
-                'data' => $shipment
+        try {
+            $validator = Validator::make($request->all(), [
+                'amount' => 'required|numeric',
+                'profit' => 'required|numeric',
+                'container_id' => 'required|exists:containers,id',
+                'return_date' => 'required|date',
+                'processing_date' => 'required|date',
+                'current_date' => 'required|date',
+                'investor_id' => 'required|exists:users,id',
             ]);
-        }
-        return redirect()->route('shipment.index')
+
+            if ($validator->fails()) {
+
+                return redirect()->back()->withErrors($validator->errors()->all());
+            }
+
+            $containerUser = ContainerUser::where([
+
+                'user_id' => $request->investor_id,
+                'container_id' => $request->container_id,
+
+            ])->exists();
+
+            if (!$containerUser && $request->has('api')) {
+
+                ContainerUser::create([
+
+                    'user_id' => $request->investor_id,
+                    'container_id' => $request->container_id,
+                    'user_container_cycle' => $request->user_container_cycle_id,
+                ]);
+            }
+
+            $shipment = Shipment::create([
+
+                'amount' => $request->amount,
+                'profit' => $request->profit,
+                'container_id' => $request->container_id,
+                'return_date' => $request->return_date,
+                'processing_date' => $request->processing_date,
+                'current_date' => $request->current_date,
+                'user_id' => $request->investor_id,
+                'created_at' => Carbon::now()
+            ]);
+
+            if ($request->has('api')) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Shipment Created successfully',
+                    'data' => $shipment
+                ]);
+            }
+            return redirect()->route('shipment.index')
             ->with('success', 'Shipment created successfully.');
+
+        } catch (\Exception $e) {
+            return response()->error('An error occurred while Store the Shipment', 500, ['exception' => $e->getMessage()]);
+        }
     }
 
     public function show(Shipment $shipment)
@@ -80,13 +101,13 @@ class ShipmentController extends Controller
         return view('shipment.show', compact('shipment'));
     }
 
-    public function edit($shipment)
+    public function edit(Request $request, $shipment)
     {
         $shipment = Shipment::with('container', 'user')->where('id', $shipment)->first();
         $shipment->processing_date = Carbon::parse($shipment->processing_date);
         $shipment->return_date = Carbon::parse($shipment->return_date);
         $shipment->current_date = Carbon::parse($shipment->current_date);
-        $containers = ContainerController::containerList()->getOriginalContent();
+        $containers = ContainerController::containerList($request)->getOriginalContent();
         $investors = UserController::userList()->getOriginalContent();
 
         $containers = ($containers['status'] == 'success') ? $containers['data'] : [];

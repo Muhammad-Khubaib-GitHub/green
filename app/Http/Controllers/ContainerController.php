@@ -130,6 +130,20 @@ class ContainerController extends Controller
                 "container_users.user_id" => $investor_id,
             ])->orderBy('id','desc')->first();
 
+            // if(!$containerDetail){
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'You need to set the Container Days First.',
+            //     ]);
+            // }
+
+            if(!isset($containerDetail)){
+
+                $containerDetail = new ContainerUser();
+                $containerDetail->user_container_cycle = 35;
+                $containerDetail->missing = true;
+            }
+
             if($containerShipment){
 
                 $containerDetail->new_return_date = Carbon::createFromFormat('Y-m-d', $containerShipment->return_date)->addDays($containerDetail->user_container_cycle)->format('Y-m-d');
@@ -143,6 +157,15 @@ class ContainerController extends Controller
             $containerDetail->return_date = isset($containerShipment) ? $containerShipment->return_date : date('Y-m-d');
             $containerDetail->current_date = isset($containerShipment) ? $containerShipment->current_date : date('Y-m-d');
             $containerDetail->today_date = date('Y-m-d');
+
+            // if($containerDetail->has('missing') && $containerDetail->missing == true){
+
+            //     return response()->json([
+            //         'success' => true,
+            //         'message' => 'You need to set the Container Days First.',
+            //         'data' => $containerDetail
+            //     ]);
+            // }
 
             return response()->json([
                 'success' => true,

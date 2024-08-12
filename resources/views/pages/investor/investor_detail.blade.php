@@ -291,8 +291,8 @@
                                         <div class="table-container">
                                             @foreach ($shipments as $investor)
 
-                                            <table id="collapsibleTable">
-                                                <thead>
+                                            <table id="collapsibleTable" style="border-radius: 20px;">
+                                                <thead style="background: lightgray;">
                                                     <tr>
                                                         <th>Investor #</th>
                                                         <th>Name</th>
