@@ -260,14 +260,18 @@
                                                         <span class="navi-text">CSV</span>
                                                     </a>
                                                 </li>
-                                                <li class="navi-item">
-                                                    <a href="#" class="navi-link">
-                                                        <span class="navi-icon">
-                                                            <i class="la la-file-pdf-o"></i>
-                                                        </span>
-                                                        <span class="navi-text">PDF</span>
-                                                    </a>
-                                                </li>
+                                                <form id="pdfForm" action="{{ route('investor.shipmentsPdf') }}" method="GET">
+                                                    <input type="hidden" name="investor_id" id="pdfInvestorId" value="{{ array_key_first($shipments) }}">
+                                                    @csrf
+                                                    <li class="navi-item">
+                                                        <a href="#" class="navi-link" id="show-pdf">
+                                                            <span class="navi-icon">
+                                                                <i class="la la-file-pdf-o"></i>
+                                                            </span>
+                                                            <span class="navi-text">PDF</span>
+                                                        </a>
+                                                    </li>
+                                                </form>
                                             </ul>
                                         </div>
                                     </div>
@@ -342,7 +346,7 @@
                                                                         @if ($investor)
                                                                         @forelse ($investor->shipments as $shipment)
                                                                         <tr data-id="{{ $shipment->id }}" data-delete-url="{{ route('shipment.destroy', $shipment->id) }}" data-update-url="{{ route('shipment.update', $shipment->id) }}" data-investor-id="{{$investor->id}}">
-                                                                            <td><input type="text" name="id" value="{{ $shipment->id }}" readonly ></td>
+                                                                            <td><input type="text" name="id" value="{{ $shipment->id }}" readonly></td>
                                                                             <td><input type="number" name="amount" value="{{ $shipment->amount }}" readonly required></td>
                                                                             <td><input type="number" name="container_id" value="{{ $shipment->container_id }}" readonly required></td>
                                                                             <td><input type="number" name="user_container_cycle_id" value="{{ $shipment->user_container_cycle }}" readonly required></td>
@@ -568,40 +572,39 @@
     }
 
     function handleContainerChange(containerInput) {
-    const containerId = containerInput.value;
-    const row = containerInput.closest('tr');
-    const investorId = row.getAttribute('data-investor-id');
-    const baseUrl = `{{ route('container.detail', ['id' => 'PLACEHOLDER']) }}`;
+        const containerId = containerInput.value;
+        const row = containerInput.closest('tr');
+        const investorId = row.getAttribute('data-investor-id');
+        const baseUrl = `{{ route('container.detail', ['id' => 'PLACEHOLDER']) }}`;
 
-    var apiUrl = baseUrl.replace('PLACEHOLDER', containerId);
+        var apiUrl = baseUrl.replace('PLACEHOLDER', containerId);
 
-    apiUrl = apiUrl? apiUrl+"/"+investorId : apiUrl;
+        apiUrl = apiUrl ? apiUrl + "/" + investorId : apiUrl;
 
 
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            if(data.success){
-                // Update row fields with the data from the API
-                row.querySelector('input[name="user_container_cycle_id"]').value = data.data.user_container_cycle || '';
-                row.querySelector('input[name="processing_date"]').value = data.data.return_date || '';
-                row.querySelector('input[name="return_date"]').value = data.data.new_return_date || '';
-                row.querySelector('input[name="current_date"]').value = data.data.today_date || '';
-            } else {
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update row fields with the data from the API
+                    row.querySelector('input[name="user_container_cycle_id"]').value = data.data.user_container_cycle || '';
+                    row.querySelector('input[name="processing_date"]').value = data.data.return_date || '';
+                    row.querySelector('input[name="return_date"]').value = data.data.new_return_date || '';
+                    row.querySelector('input[name="current_date"]').value = data.data.today_date || '';
+                } else {
                     toastr.error(data.message, "Invalid");
                     row.querySelector('input[name="user_container_cycle_id"]').value = '';
                     row.querySelector('input[name="processing_date"]').value = '';
                     row.querySelector('input[name="return_date"]').value = '';
                     row.querySelector('input[name="current_date"]').value = '';
                 }
-        })
-        .catch(error => {
+            })
+            .catch(error => {
 
-            console.error('Error fetching container data:', error);
-            // Handle error case, e.g., show an alert or leave fields unchanged
-        });
-}
-
+                console.error('Error fetching container data:', error);
+                // Handle error case, e.g., show an alert or leave fields unchanged
+            });
+    }
 </script>
 
 <script>
@@ -778,6 +781,15 @@
                     row.remove();
                 });
             });
+        });
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('show-pdf').addEventListener('click', function(event) {
+            event.preventDefault();
+
+            document.getElementById('pdfForm').submit();
         });
     });
 </script>

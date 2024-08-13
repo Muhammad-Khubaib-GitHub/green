@@ -54,56 +54,7 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $shipments = [];
-
-        $startDate = "2024-07-01 00:0:00";
-
-        $endDate = "2024-07-01 23:59:59";
-
-        $parent = User::find($id);
-
-        $parentShipments = $parent->with('shipments')
-        ->where('id', $id)
-        ->first();
-
-        foreach($parentShipments->shipments as $shipment){
-            $containerUser = ContainerUser::select('user_container_cycle')
-            ->where([
-                'user_id' => $shipment->user_id,
-                'container_id' => $shipment->container_id
-            ])->first();
-
-            if ($containerUser) {
-                $shipment->user_container_cycle = $containerUser->user_container_cycle;
-            }
-        }
-
-        $shipments[$id] = $parentShipments ? $parentShipments : $parent;
-
-        $children = $parent->children;
-
-        if(!$children->isEmpty()){
-
-            foreach ($children as $child) {
-                $childShipments = $child->with('shipments')
-                ->where('id', $child->id)
-                ->first();
-
-                $shipments[$child->id] = $childShipments ? $childShipments : collect();
-
-                foreach($childShipments->shipments as $shipment){
-                    $containerUser = ContainerUser::select('user_container_cycle')
-                    ->where([
-                        'user_id' => $shipment->user_id,
-                        'container_id' => $shipment->container_id
-                    ])->first();
-
-                    if ($containerUser) {
-                        $shipment->user_container_cycle = $containerUser->user_container_cycle;
-                    }
-                }
-            }
-        }
+        $shipments = self::getShipmentDetails($id);
 
         return view('pages.investor.investor_detail', compact('shipments'));
     }
@@ -146,7 +97,8 @@ class UserController extends Controller
     }
 
 
-    public function home(){
+    public function home()
+    {
 
         return view('pages.login');
     }
@@ -174,5 +126,76 @@ class UserController extends Controller
     {
 
         return view('pages.investor.investor_detail');
+    }
+
+    /**
+     * get Shipment Details for print the pdf
+     * for a specific investor with their sub investors
+     */
+    public function getShipmentDetails($investor_id)
+    {
+        $shipments = [];
+
+        $startDate = "2024-07-01 00:0:00";
+
+        $endDate = "2024-07-01 23:59:59";
+
+        $parent = User::find($investor_id);
+
+        $parentShipments = $parent->with('shipments')
+        ->where('id', $investor_id)
+        ->first();
+
+        foreach($parentShipments->shipments as $shipment){
+            $containerUser = ContainerUser::select('user_container_cycle')
+            ->where([
+                'user_id' => $shipment->user_id,
+                'container_id' => $shipment->container_id
+            ])->first();
+
+            if ($containerUser) {
+                $shipment->user_container_cycle = $containerUser->user_container_cycle;
+            }
+        }
+
+        $shipments[$investor_id] = $parentShipments ? $parentShipments : $parent;
+
+        $children = $parent->children;
+
+        if(!$children->isEmpty()){
+
+            foreach ($children as $child) {
+                $childShipments = $child->with('shipments')
+                ->where('id', $child->id)
+                ->first();
+
+                $shipments[$child->id] = $childShipments ? $childShipments : collect();
+
+                foreach($childShipments->shipments as $shipment){
+                    $containerUser = ContainerUser::select('user_container_cycle')
+                    ->where([
+                        'user_id' => $shipment->user_id,
+                        'container_id' => $shipment->container_id
+                    ])->first();
+
+                    if ($containerUser) {
+                        $shipment->user_container_cycle = $containerUser->user_container_cycle;
+                    }
+                }
+            }
+        }
+
+        return $shipments;
+    }
+
+
+    /**
+     * send shipment details for pdf
+     */
+    public function getShipmentDetailsforPdf(Request $request)
+    {
+        $shipments = self::getShipmentDetails($request->investor_id);
+
+        return view('pdfs.investor_shipment_pdf', compact('shipments'));
     }
 }

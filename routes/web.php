@@ -20,6 +20,7 @@ use App\Http\Controllers\ShipmentController;
 Route::get('/', [UserController::class, 'home']);
 Route::get('/investor/list', [UserController::class, 'userList'])->name('investor.list');
 Route::get('/investor/detail', [UserController::class, 'investorDetail'])->name('investor.detail');
+Route::get('/investor/shipments/pdf/preview', [UserController::class, 'getShipmentDetailsforPdf'])->name('investor.shipmentsPdf');
 
 Route::get('/container/list', [ContainerController::class, 'containerList'])->name('container.list');
 Route::get('/container/{id}/detail/{investor_id?}', [ContainerController::class, 'containerDetail'])->name('container.detail');
