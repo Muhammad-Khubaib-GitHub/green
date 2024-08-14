@@ -54,6 +54,10 @@
 
 <body>
     <div class="container">
+        @php
+            $grandTotal = 0.00;
+            $grandProft = 0.00;
+        @endphp
         @foreach ($shipments as $investor)
         <h2> {{$investor->first_name." ".$investor->last_name }} </h2>
         <table class="table">
@@ -70,6 +74,10 @@
             </thead>
             <tbody>
                 @if ($investor)
+                @php
+                    $tableTotal = 0.00;
+                    $tableProft = 0.00;
+                @endphp
                 @forelse ($investor->shipments as $key => $shipment)
                 <tr>
                     <td>{{ $key + 1 }}</td>
@@ -80,6 +88,12 @@
                     <td>{{ $shipment->profit }}</td>
                     <td>{{ \Carbon\Carbon::parse($shipment->current_date)->format('Y-m-d') }}</td>
                 </tr>
+                @php
+                    $tableTotal += $shipment->amount;
+                    $tableProft += $shipment->profit;
+                    $grandTotal += $shipment->amount;
+                    $grandProft += $shipment->profit;
+                @endphp
                 @empty
                 <tr>
                     <td colspan="9">No shipmet found</td>
@@ -93,11 +107,11 @@
             <tfoot>
                 <tr>
                     <th></th>
-                    <th>Total Amount: 2.00</th>
+                    <th>Total Amount: {{ $tableTotal }}</th>
                     <th></th>
                     <th></th>
                     <th></th>
-                    <th>Total Profit: 2.00</th>
+                    <th>Total Profit: {{ $tableProft }}</th>
                     <th></th>
                 </tr>
             </tfoot>
@@ -105,8 +119,8 @@
         @endforeach
 
         <div class="totals">
-            <span>Grand Total Amount: 2.00</span>
-            <span>Grand Total Profit: 2.00</span>
+            <span>Grand Total Amount: {{ $grandTotal }}</span>
+            <span>Grand Total Profit: {{ $grandProft }} </span>
         </div>
 
     </div>
