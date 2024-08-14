@@ -38,41 +38,20 @@
                                             @csrf
                                                 <div class="pb-5" data-wizard-type="step-content" data-wizard-state="current">
                                                     <h4 class="mb-10 font-weight-bold text-dark">Add New Investor</h4>
-                                                    <div class="form-group">
-                                                        <label>Investor Name</label>
-                                                        <select name="investor_id" class="form-control" id="investorSelect">
-                                                            <option value="">Select </option>
-                                                            @foreach ($investors as $investor)
-                                                                <option value="{{ $investor->id }}">{{ $investor->first_name . " " . $investor->last_name }} </option>
-                                                            @endforeach
-                                                        </select>
-                                                        <span class="form-text text-danger error-msg" style="display: none;">Please select an investor.</span>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label>Select Container</label>
-                                                        <select name="container_id" class="form-control" id="containerSelect">
-                                                            <option value="">Select</option>
-                                                            @foreach ($containers as $container)
-                                                                <option value="{{ $container->id }}"> {{ $container->id }} </option>
-                                                            @endforeach
-                                                        </select>
-                                                        <span class="form-text text-danger error-msg" style="display: none;">Please select a container.</span>
-                                                    </div>
 
                                                     <div class="row">
                                                         <div class="col-xl-6">
                                                             <div class="form-group">
-                                                                <label>Amount</label>
-                                                                <input type="number" min=1 class="form-control" name="amount" placeholder="1000" value="" />
-                                                                <span class="form-text text-danger error-msg" style="display: none;">Please enter container amount.</span>
+                                                                <label>First Name</label>
+                                                                <input type="text" class="form-control" name="first_name" placeholder="First Name" value="" required/>
+                                                                <span class="form-text text-danger error-msg" style="display: none;">Please enter first name.</span>
                                                             </div>
                                                         </div>
                                                         <div class="col-xl-6">
                                                             <div class="form-group">
-                                                                <label>Profit</label>
-                                                                <input type="number" min=1 class="form-control" name="profit" placeholder="10" value="" />
-                                                                <span class="form-text text-danger error-msg" style="display: none;">Please enter profit.</span>
+                                                                <label>Last Name</label>
+                                                                <input type="text" class="form-control" name="last_name" placeholder="last name" value="" required/>
+                                                                <span class="form-text text-danger error-msg" style="display: none;">Please enter last name.</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -80,25 +59,43 @@
                                                     <div class="row">
                                                         <div class="col-xl-6">
                                                             <div class="form-group">
-                                                                <label>Prcessing Date</label>
-                                                                <input type="date" class="form-control" name="processing_date" placeholder="dd/mm/yyyy" value="" />
-                                                                <span class="form-text  text-danger error-msg" style="display: none;">Please select date.</span>
+                                                                <label>Email</label>
+                                                                <input type="email" class="form-control" name="email" placeholder="abc@mail.com" value="" required/>
+                                                                <span class="form-text  text-danger error-msg" style="display: none;">Please select valid email.</span>
                                                             </div>
                                                         </div>
                                                         <div class="col-xl-6">
                                                             <div class="form-group">
-                                                                <label>Return Date</label>
-                                                                <input type="date" class="form-control" name="return_date" placeholder="dd/mm/yyyy" value="" />
-                                                                <span class="form-text text-danger error-msg" style="display: none;">Please select date.</span>
+                                                                <label>Phone no</label>
+                                                                <input type="text" class="form-control" name="phone_no" placeholder="0322-1224432" value="" required/>
+                                                                <span class="form-text text-danger error-msg" style="display: none;">Please correct phone no.</span>
                                                             </div>
                                                         </div>
                                                     </div>
 
-                                                    <div class="form-group">
-                                                        <label>Current Date</label>
-                                                        <input type="date" class="form-control" name="current_date" placeholder="dd/mm/yyyy" value="" />
-                                                        <span class="form-text text-danger error-msg" style="display: none;">Please select date.</span>
+                                                    <div class="row">
+                                                        <div class="col-xl-6">
+                                                            <div class="form-group">
+                                                                <label>CNIC</label>
+                                                                <input type="text" class="form-control" name="cnic_no" placeholder="23456-9876543-2" value="" required/>
+                                                                <span class="form-text text-danger error-msg" style="display: none;">Please select national ID No.</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xl-6">
+                                                            <div class="form-group">
+                                                                <label>Main Investor</label>
+                                                                <select name="investor_id" class="form-control" id="investorSelect" required>
+                                                                    <option value="">Select </option>
+                                                                    @foreach ($investors as $investor)
+                                                                        <option value="{{ $investor->id }}">{{ $investor->first_name . " " . $investor->last_name }} </option>
+                                                                    @endforeach
+                                                                </select>
+                                                                <span class="form-text text-danger error-msg" style="display: none;">Please select an investor.</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
+
+
                                                 </div>
                                                 <div class="d-flex justify-content-between border-top mt-5 pt-10">
                                                     <div class="mr-2">

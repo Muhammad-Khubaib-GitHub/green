@@ -24,6 +24,7 @@ class User extends Authenticatable
         'phone',
         'parent_id',
         'password',
+        'parent_id'
     ];
 
     /**

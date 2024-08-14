@@ -364,12 +364,12 @@
                                                                         </tr>
                                                                         @empty
                                                                         <tr>
-                                                                            <td colspan="9">No data found</td>
+                                                                            <td colspan="9" class='no-data-found' >No data found</td>
                                                                         </tr>
                                                                         @endforelse
                                                                         @else
                                                                         <tr>
-                                                                            <td colspan="9">Investor not found</td>
+                                                                            <td colspan="9" class='no-data-found' >Investor not found</td>
                                                                         </tr>
                                                                         @endif
 

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ContainerUser;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\ContainerUser;
 
 use Illuminate\Support\Facades\Hash;
 use function PHPUnit\Framework\isEmpty;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -20,27 +21,40 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('users.create');
+        $investors = UserController::userList()->getOriginalContent();
+
+        $investors  = ($investors['status'] == 'success') ? $investors['data'] : [];
+
+        return view('pages.investor.new_investor',compact('investors'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'first_name'    => 'required|string|max:255',
-            'last_name'     => 'nullable|string|max:255',
-            'cnic'          => 'required|string|max:255|unique:users',
-            'email'         => 'required|string|email|max:255|unique:users',
-            'phone'         => 'nullable|string|max:255',
-            'password'      => 'required|string|min:8|confirmed',
+
+        $validator = Validator::make($request->all(), [
+            'first_name'        => 'required|string|max:255',
+            'last_name'         => 'nullable|string|max:255',
+            'cnic_no'           => 'required|string|max:255|unique:users,cnic',
+            'email'             => 'required|string|email|max:255|unique:users',
+            'investor_id'       => 'required|string|exists:users,id',
+            'phone_no'          => 'nullable|string|max:255'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ]);
+        }
 
         $user = new User();
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
-        $user->cnic = $request->cnic;
+        $user->cnic = $request->cnic_no;
         $user->email = $request->email;
-        $user->phone = $request->phone;
-        $user->password = Hash::make($request->password);
+        $user->phone = $request->phone_no;
+        $user->parent_id = $request->investor_id;
+        $user->password = Hash::make('password');
         $user->save();
 
         return redirect()->route('users.index')->with('success', 'User created successfully.');
