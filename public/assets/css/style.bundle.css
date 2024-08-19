@@ -4433,6 +4433,11 @@ input[type="button"].btn-block {
   min-height: 1px;
   padding: 2.25rem; }
 
+.card-background-filter {
+
+    background: whitesmoke;
+}
+
 .card-title {
   margin-bottom: 2rem; }
 

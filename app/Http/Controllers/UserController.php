@@ -31,33 +31,40 @@ class UserController extends Controller
     public function store(Request $request)
     {
 
-        $validator = Validator::make($request->all(), [
-            'first_name'        => 'required|string|max:255',
-            'last_name'         => 'nullable|string|max:255',
-            'cnic_no'           => 'required|string|max:255|unique:users,cnic',
-            'email'             => 'required|string|email|max:255|unique:users',
-            'investor_id'       => 'required|string|exists:users,id',
-            'phone_no'          => 'nullable|string|max:255'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator->errors()->first()
+        try{
+            $validator = Validator::make($request->all(), [
+                'first_name'        => 'required|string|max:255',
+                'last_name'         => 'nullable|string|max:255',
+                'cnic_no'           => 'required|string|max:255|unique:users,cnic',
+                'email'             => 'required|string|email|max:255|unique:users',
+                'investor_id'       => 'required|string|exists:users,id',
+                'phone_no'          => 'nullable|string|max:255'
             ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->first()
+                ]);
+            }
+
+            $user = new User();
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
+            $user->cnic = $request->cnic_no;
+            $user->email = $request->email;
+            $user->phone = $request->phone_no;
+            $user->parent_id = $request->investor_id;
+            $user->password = Hash::make('password');
+            $user->save();
+
+            return redirect()->route('users.index')->with('success', 'User created successfully.');
+
+        }catch(\Exception $e)
+        {
+            return response()->error('An error occurred while storing user', 500, ['exception' => $e->getMessage()]);
         }
 
-        $user = new User();
-        $user->first_name = $request->first_name;
-        $user->last_name = $request->last_name;
-        $user->cnic = $request->cnic_no;
-        $user->email = $request->email;
-        $user->phone = $request->phone_no;
-        $user->parent_id = $request->investor_id;
-        $user->password = Hash::make('password');
-        $user->save();
-
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
     public function show($id)
@@ -66,9 +73,9 @@ class UserController extends Controller
         return view('users.show', compact('user'));
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        $shipments = self::getShipmentDetails($id);
+        $shipments = self::getShipmentDetails($request, $id);
 
         return view('pages.investor.investor_detail', compact('shipments'));
     }
@@ -110,7 +117,6 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 
-
     public function home()
     {
 
@@ -146,31 +152,41 @@ class UserController extends Controller
      * get Shipment Details for print the pdf
      * for a specific investor with their sub investors
      */
-    public function getShipmentDetails($investor_id)
+    public function getShipmentDetails($request, $investor_id)
     {
-        $shipments = [];
 
-        $startDate = "2024-07-01 00:0:00";
 
-        $endDate = "2024-07-01 23:59:59";
+        $filterDate = $shipments = [];
+
+        if($request->has('date_range')){
+
+            $filterDate = self::dateWithFormat($request->date_range);
+        }
+
+        $startDate = $filterDate ? $filterDate[0] : "2024-07-01 00:0:00";
+
+        $endDate = $filterDate ? $filterDate[1] : now()->format('Y-m-d H:i:s');
 
         $parent = User::find($investor_id);
 
-        $parentShipments = $parent->with('shipments')
-        ->where('id', $investor_id)
-        ->first();
+        $parentShipments = $parent->with(['shipments' => function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }])->where('id', $investor_id)->first();
 
-        foreach($parentShipments->shipments as $shipment){
-            $containerUser = ContainerUser::select('user_container_cycle')
-            ->where([
-                'user_id' => $shipment->user_id,
-                'container_id' => $shipment->container_id
-            ])->first();
+        if($parentShipments){
+            foreach($parentShipments->shipments as $shipment){
+                $containerUser = ContainerUser::select('user_container_cycle')
+                ->where([
+                    'user_id' => $shipment->user_id,
+                    'container_id' => $shipment->container_id
+                ])->first();
 
-            if ($containerUser) {
-                $shipment->user_container_cycle = $containerUser->user_container_cycle;
+                if ($containerUser) {
+                    $shipment->user_container_cycle = $containerUser->user_container_cycle;
+                }
             }
         }
+
 
         $shipments[$investor_id] = $parentShipments ? $parentShipments : $parent;
 
@@ -179,11 +195,10 @@ class UserController extends Controller
         if(!$children->isEmpty()){
 
             foreach ($children as $child) {
-                $childShipments = $child->with('shipments')
-                ->where('id', $child->id)
-                ->first();
 
-                $shipments[$child->id] = $childShipments ? $childShipments : collect();
+                $childShipments = $child->with(['shipments' => function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                }])->where('id', $child->id)->first();
 
                 foreach($childShipments->shipments as $shipment){
                     $containerUser = ContainerUser::select('user_container_cycle')
@@ -196,6 +211,9 @@ class UserController extends Controller
                         $shipment->user_container_cycle = $containerUser->user_container_cycle;
                     }
                 }
+
+                $shipments[$child->id] = $childShipments ? $childShipments : collect();
+
             }
         }
 
@@ -208,8 +226,41 @@ class UserController extends Controller
      */
     public function getShipmentDetailsforPdf(Request $request)
     {
-        $shipments = self::getShipmentDetails($request->investor_id);
+        $shipments = self::getShipmentDetails($request, $request->investor_id);
 
         return view('pdfs.investor_shipment_pdf', compact('shipments'));
+    }
+
+
+     /**
+     * Filter the user shipments with repect to date
+     */
+    public function getShipmentWithDate(Request $request)
+    {
+
+        $shipments = self::getShipmentDetails($request, $request->investor_id);
+
+        return view('pages.investor.investor_detail', compact('shipments'));
+    }
+
+
+    /**
+     * Helper function to get the date with format
+     */
+    public static function dateWithFormat($date_range)
+    {
+
+        if($date_range){
+
+            $dateParts = explode(' / ', $date_range);
+
+            $fromDate = Carbon::createFromFormat('m/d/Y', $dateParts[0])->startOfDay();
+
+            $toDate = Carbon::createFromFormat('m/d/Y', $dateParts[1])->endOfDay();
+
+            return [$fromDate, $toDate];
+        }
+
+        return [];
     }
 }

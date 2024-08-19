@@ -171,6 +171,10 @@
         .detail-table th {
             font-size: 12px;
         }
+
+        .width-controle-date-picker {
+            max-width: 300px;
+        }
     }
 </style>
 @endsection
@@ -287,6 +291,31 @@
                                         </span>New Record</a>
                                 </div>
                             </div>
+
+
+                            <div class="card card-custom">
+                                <form class="form" action="{{ route('investor.shipmentFilter') }}", method="POST" id="filter-form-id">
+                                    @csrf
+                                    <div class="card-body card-background-filter">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <div class='input-group' style="width: 100%;" id='kt_daterangepicker_6'>
+                                                    <input type='text' name="date_range"  id="dateRange" class="form-control width-controle-date-picker" readonly="readonly" placeholder="Select date range" />
+                                                    <input type="hidden" name="investor_id" value="{{ array_key_first($shipments) }}">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                                <div class="col-lg-12 d-flex justify-content-end">
+                                                    <button type="submit" class="btn btn-primary mr-2">Filter</button>
+                                                    <button type="button" id="reset-button" class="btn btn-secondary">Reset</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
                             <div class="card-body">
                                 <div class="container-fluid">
                                     <h2 class="text-white font-weight-bold my-2 mr-5">Investor Details</h2>
@@ -400,6 +429,8 @@
 @endsection
 
 @section('script')
+
+<script src="{{ asset('assets/js/pages/crud/forms/widgets/bootstrap-daterangepicker.js') }}"></script>
 
 <script>
     // enable the shipment fields
@@ -792,6 +823,13 @@
             document.getElementById('pdfForm').submit();
         });
     });
+
+    document.getElementById('reset-button').onclick = function(event) {
+        event.preventDefault();
+        document.getElementById('filter-form-id').reset();
+
+        window.location.href = '{{ route('users.edit', array_key_first($shipments)) }}';
+    };
 </script>
 
 @endsection
