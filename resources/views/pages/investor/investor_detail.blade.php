@@ -351,6 +351,7 @@
                                                             <button class="action-btn add">Add</button>
                                                             <button class="action-btn save hidden">Save</button>
                                                             <button class="action-btn cancel hidden">Cancel</button>
+                                                            <button class="action-btn cycle ">Cycle</button>
                                                         </td>
                                                     </tr>
                                                     <tr class="detail-row">
@@ -364,8 +365,8 @@
                                                                             <th>Container</th>
                                                                             <th>Cycle Days</th>
                                                                             <th>Processing</th>
-                                                                            <th>Return</th>
-                                                                            <th>Created</th>
+                                                                            <th>Expected Return</th>
+                                                                            <th>Actual Return</th>
                                                                             <!-- <th>Investor</th> -->
                                                                             <th>Profit</th>
                                                                             <th>Actions</th>
@@ -619,7 +620,7 @@
                 if (data.success) {
                     // Update row fields with the data from the API
                     row.querySelector('input[name="user_container_cycle_id"]').value = data.data.user_container_cycle || '';
-                    row.querySelector('input[name="processing_date"]').value = data.data.return_date || '';
+                    row.querySelector('input[name="processing_date"]').value = data.data.current_date || '';
                     row.querySelector('input[name="return_date"]').value = data.data.new_return_date || '';
                     row.querySelector('input[name="current_date"]').value = data.data.today_date || '';
                 } else {

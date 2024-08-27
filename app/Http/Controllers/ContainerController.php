@@ -146,7 +146,7 @@ class ContainerController extends Controller
 
             if($containerShipment){
 
-                $containerDetail->new_return_date = Carbon::createFromFormat('Y-m-d', $containerShipment->return_date)->addDays($containerDetail->user_container_cycle)->format('Y-m-d');
+                $containerDetail->new_return_date = Carbon::createFromFormat('Y-m-d', $containerShipment->current_date)->addDays($containerDetail->user_container_cycle)->format('Y-m-d');
 
             }else{
 
