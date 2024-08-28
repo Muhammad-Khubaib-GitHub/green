@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Shipment;
 use Illuminate\Http\Request;
-use App\Models\ContainerUser;
 
+use App\Models\ContainerUser;
+use Exception;
 use Illuminate\Support\Facades\Hash;
 use function PHPUnit\Framework\isEmpty;
 use Illuminate\Support\Facades\Validator;
@@ -262,5 +264,53 @@ class UserController extends Controller
         }
 
         return [];
+    }
+
+
+    /**
+     * Create New cycle
+     */
+    public function createNewCycle(Request $request)
+    {
+
+        try {
+            $startDate = Carbon::now()->startOfMonth();
+            $endDate   = Carbon::now()->endOfMonth();
+
+            $shipments = Shipment::select('shipments.*', 'container_users.user_container_cycle')
+            ->join('users', 'shipments.user_id', '=', 'users.id')
+            ->join('container_users', function ($join) {
+                $join->on('container_users.user_id', '=', 'shipments.user_id')
+                ->on('container_users.container_id', '=', 'shipments.container_id');
+            })
+                ->where('users.id', $request->investor_id)
+                ->whereBetween('shipments.created_at', [$startDate, $endDate])
+                ->get();
+
+            $newShipments = [];
+
+            foreach ($shipments as $shipment) {
+                $newShipments[] = [
+                    'amount' => $shipment->amount,
+                    'profit' => 0,
+                    'user_id' => $shipment->user_id,
+                    'container_id' => $shipment->container_id,
+                    'processing_date' => $shipment->current_date,
+                    'return_date' => Carbon::parse($shipment->current_date)->addDays($shipment->user_container_cycle),
+                    'current_date' => now()->format('Y-m-d H:i:s'),
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+
+                ];
+            }
+
+            // Bulk insert the new shipments
+            Shipment::insert($newShipments);
+
+            return response()->json(['success' => true]);
+        } catch (Exception $e) {
+
+            return response()->error('An error occurred while new cycle creating', 500, ['exception' => $e->getMessage()]);
+        }
     }
 }

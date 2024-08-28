@@ -22,6 +22,7 @@ Route::get('/investor/list', [UserController::class, 'userList'])->name('investo
 Route::get('/investor/detail', [UserController::class, 'investorDetail'])->name('investor.detail');
 Route::get('/investor/shipments/pdf/preview', [UserController::class, 'getShipmentDetailsforPdf'])->name('investor.shipmentsPdf');
 Route::post('investor/shipment/filter', [UserController::class, 'getShipmentWithDate'])->name('investor.shipmentFilter');
+Route::post('/investor/new/cycle', [UserController::class, 'createNewCycle'])->name('investor.cycle');
 
 Route::get('/container/list', [ContainerController::class, 'containerList'])->name('container.list');
 Route::get('/container/{id}/detail/{investor_id?}', [ContainerController::class, 'containerDetail'])->name('container.detail');

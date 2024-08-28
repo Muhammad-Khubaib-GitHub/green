@@ -337,21 +337,21 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr class="collapsible-row" data-investor-id="{{$investor->id}}">
+                                                    <tr class="collapsible-row" data-investor-id="{{$investor->id}}" new-cycle-url="{{ route('investor.cycle', $investor->id) }}">
 
-                                                        <td><input type="text" value="{{$investor->id}}" readonly></td>
-                                                        <td><input type="text" value="{{$investor->first_name}}" readonly></td>
-                                                        <td><input type="email" value="{{$investor->email}}" readonly></td>
-                                                        <td><input type="text" value="Address ... " readonly></td>
-                                                        <td><input type="text" value="{{$investor->cnic}}" readonly></td>
-                                                        <td><input type="text" value="{{$investor->phone}}" readonly></td>
+                                                        <td><input type="text"  name="investor_id" value="{{$investor->id}}" readonly></td>
+                                                        <td><input type="text"  name="first_name" value="{{$investor->first_name}}" readonly></td>
+                                                        <td><input type="email" name="last_name" value="{{$investor->email}}" readonly></td>
+                                                        <td><input type="text"  name="address" value="Address ... " readonly></td>
+                                                        <td><input type="text"  name="investor_cnic" value="{{$investor->cnic}}" readonly></td>
+                                                        <td><input type="text"  name="investor_phone" value="{{$investor->phone}}" readonly></td>
                                                         <td class="expand-btn-container">
                                                             <button class="toggle-btn">+</button>
                                                             <button class="action-btn edit">Edit</button>
                                                             <button class="action-btn add">Add</button>
                                                             <button class="action-btn save hidden">Save</button>
                                                             <button class="action-btn cancel hidden">Cancel</button>
-                                                            <button class="action-btn cycle ">Cycle</button>
+                                                            <button class="action-btn cycle" onclick="handleCycle(this)">Cycle</button>
                                                         </td>
                                                     </tr>
                                                     <tr class="detail-row">
@@ -603,6 +603,7 @@
         row.querySelector('.cancel').classList.add('hidden');
     }
 
+    // based on selected Container change the processing and return date
     function handleContainerChange(containerInput) {
         const containerId = containerInput.value;
         const row = containerInput.closest('tr');
@@ -637,6 +638,55 @@
                 // Handle error case, e.g., show an alert or leave fields unchanged
             });
     }
+
+    // Create New Cycle
+    function handleCycle(button) {
+        const row = button.closest('tr');
+        const data = {};
+        row.querySelectorAll('input').forEach(input => {
+            data[input.name] = input.value;
+        });
+
+        data['api'] = 'apicall';
+
+        const newCycleUrl = row.getAttribute('new-cycle-url');
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch(newCycleUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+
+                    var userConfirmed = confirm("Shipments have been successfully repeated. Do you want to reload the page?");
+
+                    if (userConfirmed) {
+                        // If the user clicks "Yes", reload the page
+                        location.reload();
+                    } else {
+                        // If the user clicks "No", do nothing
+                        console.log("Page reload cancelled by user.");
+                    }
+
+                } else {
+
+                    toastr.info(data.message, "Info");
+                }
+            })
+            .catch(error => {
+
+                console.error('Error:', error);
+                toastr.error(data.message, "Error");
+            });
+    }
+
 </script>
 
 <script>
